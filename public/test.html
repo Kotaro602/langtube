@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        @charset "UTF-8";
+
+        body {
+            margin: 0;
+        }
+
+        .content {
+            width: 90%;
+            height: 80px;
+            margin: 20px auto;
+            background-color: #23e2f3;
+        }
+
+        .stop {
+            background-color: #088029;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content stop">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content stop">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content stop">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content stop">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <div class="content">
+        <p>ほげほげ</p>
+    </div>
+
+    <!-- 読み込む -->
+    <script>
+        /**
+         * Scroll
+         */
+        window.onscroll = scrollWindow;
+
+        /**
+         * スクロールされている間呼ばれる
+         */
+        function scrollWindow() {
+            // 条件
+            var items = document.querySelectorAll('.stop');
+            items.forEach(function (item) {
+                var backgroundColor = item.style.backgroundColor;
+                if (isItemInScreen(item) && !(backgroundColor == 'rgb(37, 37, 37)')) {
+                    item.style.backgroundColor = 'rgb(37, 37, 37)';
+                    console.log("とおる");
+                    stopScroll();
+                }
+            });
+        }
+
+        /**
+         * スクロールを止める
+         */
+        function stopScroll() {
+            // 現在のスクロール量
+            var scrollOffsetY = window.pageYOffset;
+            window.scrollTo(0, scrollOffsetY);
+        }
+
+        /**
+         * 要素が指定した範囲にあるかどうか
+         * @param {Element} item 
+         * @return {Booelan}
+         */
+        function isItemInScreen(item) {
+            var screenHeight = window.innerHeight;
+            var itemBottomY = item.getBoundingClientRect().bottom;
+            var boundary = screenHeight / 2; // 上からスクロールしてくるとここで止まる 画面topからどれだけか
+
+            if (0 <= itemBottomY && itemBottomY <= boundary) {
+                return true;
+            }
+
+            return false;
+        }
+    </script>
+</body>

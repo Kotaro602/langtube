@@ -1,0 +1,56 @@
+{
+  "name": "youtube_auth",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "main.js",
+  "dependencies": {
+    "@material-ui/core": "^3.1.0",
+    "@material-ui/icons": "^3.0.1",
+    "aphrodite": "^2.2.3",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "browser-sync": "^2.24.7",
+    "css-loader": "^1.0.0",
+    "express": "^4.16.3",
+    "file-loader": "^2.0.0",
+    "moment": "^2.22.2",
+    "node-tsv-json": "^0.2.1",
+    "npm-run-all": "^4.1.3",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "react-draggable": "^3.0.5",
+    "react-pure-render": "^1.0.2",
+    "react-query-params": "^1.0.8",
+    "react-slick": "^0.23.1",
+    "react-youtube": "^7.6.0",
+    "slick-carousel": "^1.8.1",
+    "style-loader": "^0.23.0",
+    "unescape": "^1.0.1",
+    "url-loader": "^1.1.1",
+    "webpack": "^4.19.1",
+    "webpack-dev-server": "^3.1.8"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.1.0"
+  },
+  "scripts": {
+    "start": "npm-run-all --parallel webpack-watch server",
+    "webpack-watch": "webpack --watch -d",
+    "server": "webpack-dev-server",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bs": "browser-sync start --config bs-config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bradtraversy/youtube_api_auth_app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bradtraversy/youtube_api_auth_app/issues"
+  },
+  "homepage": "https://github.com/bradtraversy/youtube_api_auth_app#readme"
+}
