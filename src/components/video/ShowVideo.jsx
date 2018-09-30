@@ -4,6 +4,7 @@ import { StyleSheet, css } from 'aphrodite';
 import YouTube from 'react-youtube';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import moment from 'moment';
+import Grid from '@material-ui/core/Grid';
 
 import { getVideoInfo } from '../../api/YoutubeAPI';
 
@@ -49,14 +50,21 @@ export default class ShowVideo extends Component {
           />
         </div>
         {videoInfo && (
-          <div className={css(styles.infoBox)}>
-            <p className={css(styles.title)}>{videoInfo.snippet.localized.title}</p>
-            <p className={css(styles.channelTitle)}>{videoInfo.snippet.channelTitle}</p>
-            <p className={css(styles.statistics)}>
-              <span className={css(styles.publish)}>{moment(videoInfo.snippet.publishedAt).format('DD MMM YYYY')} | </span>
-              <span className={css(styles.view)}>{videoInfo.statistics.viewCount} views</span>
-            </p>
-          </div>
+          <Grid container spacing={8}>
+            <Grid item xs={9}>
+              <div className={css(styles.infoBox)}>
+                <p className={css(styles.title)}>{videoInfo.snippet.localized.title}</p>
+                <p className={css(styles.channelTitle)}>{videoInfo.snippet.channelTitle}</p>
+                <p className={css(styles.statistics)}>
+                  <span className={css(styles.publish)}>{moment(videoInfo.snippet.publishedAt).format('DD MMM YYYY')} | </span>
+                  <span className={css(styles.view)}>{videoInfo.statistics.viewCount} views</span>
+                </p>
+              </div>
+            </Grid>
+            <Grid item xs={3}>
+              <div style={{ background: 'yellow' }} />
+            </Grid>
+          </Grid>
         )}
       </div>
     );
@@ -81,7 +89,7 @@ const styles = StyleSheet.create({
   },
   title: {
     margin: 10,
-    width: 500,
+    //width: 500,
     fonwWeight: 500,
     fontSize: 20,
     fontFamily: 'Retina,arial'

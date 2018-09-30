@@ -126,7 +126,7 @@ class App extends ReactQueryParams {
     };
 
     return (
-      <div className={classes.root}>
+      <div>
         <Grid container spacing={8} direction="row-reverse">
           <Hidden smDown>
             <Header />
@@ -166,9 +166,6 @@ class App extends ReactQueryParams {
 }
 
 const styles = theme => ({
-  root: {
-    textAlign: 'center'
-  },
   right: {
     position: 'relative',
     paddingBottom: '56.25%',
