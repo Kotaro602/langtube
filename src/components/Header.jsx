@@ -21,7 +21,7 @@ export default class Header extends Component {
 
     return (
       <Grid item xs={12}>
-        <AppBar position="static">
+        <AppBar position="static" style={{height: 50}}>
           <Toolbar>
             <Typography variant="title" color="inherit">
               LangTube

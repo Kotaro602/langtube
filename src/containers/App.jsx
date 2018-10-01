@@ -7,7 +7,7 @@ import ShowVideo from '../components/video/ShowVideo';
 import RelatedVideo from '../components/video/RelatedVideo';
 import Subtitle from '../components/video/Subtitle';
 import Dictionary from '../components/video/Dictionary';
-import { getSubtitle } from '../api/YoutubeAPI';
+import { getSubtitleList, getSubtitle } from '../api/YoutubeAPI';
 
 import { StyleSheet, css } from 'aphrodite';
 import ReactQueryParams from 'react-query-params';
@@ -36,7 +36,8 @@ class App extends ReactQueryParams {
       videoInfo: null,
       searchWord: null,
       relatedVideoList: null,
-      subtitleText: null,
+      subtitle: [],
+      subtitleInfo: null,
       currentTimeArray: [],
       currentTextNo: 0
     };
@@ -53,38 +54,34 @@ class App extends ReactQueryParams {
 
   componentDidMount() {
     setInterval(() => {
-      //TODO: ココバグってるので直す
       const player = this.player;
       if (
         player !== null &&
         player.getPlayerState() !== YT.PlayerState.BUFFERING &&
+        player.getPlayerState() !== YT.PlayerState.PAUSED &&
         player.getCurrentTime() > this.state.currentTimeArray[this.state.currentTextNo + 1]
       ) {
         this.setState({ currentTextNo: this.state.currentTextNo + 1 });
       }
-    }, 100);
+    }, 200);
 
-    getSubtitle(this.videoId).then(res => {
+    getSubtitle(this.videoId, null).then(info =>{
       let currentTimeArray = [];
-      const texts = res.getElementsByTagName('text');
-
-      for (let i = 0; i < texts.length; i++) {
-        currentTimeArray.push(texts[i].getAttribute('start'));
-      }
-      this.setState({ subtitleText: res, currentTimeArray: currentTimeArray });
-    });
+      info.subtitle.forEach(text =>{
+        currentTimeArray.push(text.attributes.start);
+      })
+      this.setState(Object.assign(info, {currentTimeArray: currentTimeArray}));
+    })
   }
 
   onReady(event) {
-    this.setState({
-      player: event.target
-    });
+    this.player = event.target;
   }
 
   stateChange(event) {
-    if (event.data === YT.PlayerState.BUFFERING) {
-      const currentTime = this.state.player.getCurrentTime();
-      const targetIndex = this.currentTimeArray.findIndex(item => item > currentTime);
+    if (event.data === YT.PlayerState.BUFFERING || event.data === YT.PlayerState.PLAYING) {
+      const currentTime = this.player.getCurrentTime();
+      const targetIndex = this.state.currentTimeArray.findIndex(item => item > currentTime);
       if (targetIndex !== 0) {
         this.setState({ currentTextNo: Number(targetIndex - 1) });
       }
@@ -92,16 +89,16 @@ class App extends ReactQueryParams {
   }
 
   startChange() {
-    if (this.state.player.getPlayerState() === YT.PlayerState.PLAYING) {
-      this.state.player.pauseVideo();
-    } else {
-      this.state.player.playVideo();
-    }
+    // if (this.player.getPlayerState() === YT.PlayerState.PLAYING) {
+    //   this.player.pauseVideo();
+    // } else {
+    //   this.player.playVideo();
+    // }
   }
 
   seekToYoutube(event) {
     const element = event.target.parentNode;
-    this.state.player.seekTo(element.getAttribute('start'));
+    this.player.seekTo(element.getAttribute('start'));
     this.setState({
       currentTextNo: Number(element.getAttribute('id'))
     });
@@ -115,15 +112,6 @@ class App extends ReactQueryParams {
 
   render() {
     const { classes, width } = this.props;
-    const opts = {
-      playerVars: {
-        autoplay: 0,
-        showinfo: 0,
-        controls: 2,
-        playsinline: 1,
-        rel: 0
-      }
-    };
 
     return (
       <div>
@@ -150,7 +138,7 @@ class App extends ReactQueryParams {
             <Subtitle
               width={width}
               currentTextNo={this.state.currentTextNo}
-              subtitleText={this.state.subtitleText}
+              subtitle={this.state.subtitle}
               seekToYoutube={this.seekToYoutube}
               textHover={this.textHover}
             />
@@ -159,7 +147,7 @@ class App extends ReactQueryParams {
             <Grid item xs={1} />
           </Hidden>
         </Grid>
-        <Dictionary searchWord={this.state.searchWord} />
+        {/* <Dictionary searchWord={this.state.searchWord} /> */}
       </div>
     );
   }

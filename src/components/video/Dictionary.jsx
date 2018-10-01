@@ -43,7 +43,7 @@ export default class Dictionary extends Component {
     return (
       <Draggable
         handle=".handle"
-        defaultPosition={{ x: 200, y: -500 }}
+        defaultPosition={{ x: 800, y: -200 }}
         onStart={this.handleStart}
         onDrag={this.handleDrag}
         onStop={this.handleStop}>

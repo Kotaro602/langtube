@@ -1,9 +1,9 @@
 import appConst from '../../app-const.js';
 import config from '../../config.js';
 import getQueryString from '../util/urlParameterUtil'
+import convert from 'xml-js'
 
 export function getVideoInfo(videoId) {
-    console.log('ss')
     const params = {
         'part': 'snippet,statistics',
         'id': videoId,
@@ -29,19 +29,44 @@ export function getRelatedVideo(relatedVideoId, resultCount) {
     return fetch(appConst.youtube.searchUrl + query).then(res => res.json());
 }
 
-export function getSubtitle(videoId) {
+export function getSubtitle(videoId, langage) {
 
     const params = {
-        'hl': 'en',
-        'lang': 'en',
-        'v': videoId,
+        'type': 'list',
+        'v': videoId
     };
     const query = getQueryString(params);
+
     return fetch(appConst.youtube.subtitleUrl + query)
         .then(res => res.text())
         .then(textData => {
+            const subtitleList = convert.xml2js(textData).elements[0].elements;
+            const searchLang = langage ? langage : 'en';
+            const subtitleInfoAttributes = subtitleList.find(item => {
+                return item.attributes.lang_code === searchLang;
+            })
+            const subtitleInfo = subtitleInfoAttributes.attributes;
 
-            const parser = new DOMParser();
-            return parser.parseFromString(textData, "text/xml");
+            const params = {
+                'hl': subtitleInfo.lang_code,
+                'lang': subtitleInfo.lang_code,
+                'name': subtitleInfo.name,
+                'v': videoId,
+            };
+            const query = getQueryString(params);
+
+            return fetch(appConst.youtube.subtitleUrl + query)
+                .then(res => res.text())
+                .then(textData => {
+
+                    const subtitle = convert.xml2js(textData).elements[0].elements;
+
+                    return {
+                        subtitleList: subtitleList,
+                        subtitleInfo: subtitleInfo,
+                        subtitle: subtitle
+                    }
+                });
+
         });
 }

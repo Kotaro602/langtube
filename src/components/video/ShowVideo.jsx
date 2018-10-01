@@ -5,6 +5,8 @@ import YouTube from 'react-youtube';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
 import { getVideoInfo } from '../../api/YoutubeAPI';
 
@@ -38,7 +40,7 @@ export default class ShowVideo extends Component {
     };
 
     return (
-      <div>
+      <div style={{marginTop:10}}>
         <div className={css(styles.youtubeBox)}>
           <YouTube
             videoId={videoId}
@@ -50,6 +52,8 @@ export default class ShowVideo extends Component {
           />
         </div>
         {videoInfo && (
+          <Card>
+            <CardContent>
           <Grid container spacing={8}>
             <Grid item xs={9}>
               <div className={css(styles.infoBox)}>
@@ -65,6 +69,8 @@ export default class ShowVideo extends Component {
               <div style={{ background: 'yellow' }} />
             </Grid>
           </Grid>
+          </CardContent>
+          </Card>
         )}
       </div>
     );

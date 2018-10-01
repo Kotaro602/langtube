@@ -1,40 +1,101 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { StyleSheet, css } from 'aphrodite';
+import shouldPureComponentUpdate from 'react-pure-render/function';
+import $ from 'jquery';
+import unescape from 'unescape';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+
 
 import Typography from '@material-ui/core/Typography';
 
 export default class Subtitle extends Component {
+  shouldComponentUpdate = shouldPureComponentUpdate;
+
   constructor(props) {
     super(props);
+    this.state = {
+      age: '',
+      open: false,
+    };
+  
   }
 
+  componentDidUpdate(){
+    const node = document.getElementById(this.props.currentTextNo);
+    setTimeout(() => {
+      $('#subtitle').animate({scrollTop: node.offsetTop - 250}, 350, 'linear');
+    }, 50);
+  }
+
+  handleChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
+
+  handleClose = () => {
+    this.setState({ open: false });
+  };
+
+  handleOpen = () => {
+    this.setState({ open: true });
+  };
+
+
   render() {
-    const { width, seekToYoutube, subtitleText, currentTextNo, textHover } = this.props;
+    const { width, seekToYoutube, subtitle, currentTextNo, textHover } = this.props;
+
+    //console.log(decode('&lt;div&gt;abc&lt;/div&gt;'));
 
     let textArray = [];
-    if (subtitleText) {
-      const texts = subtitleText.getElementsByTagName('text');
-      for (let i = 0; i < texts.length; i++) {
-        const start = texts[i].getAttribute('start');
-        const text = unescape(texts[i].textContent).replace(/(\n|\r)/g, ' ');
-
+    if (subtitle) {
+      subtitle.forEach((item, i) => {
+        const start = item.attributes.start;
+        const text = unescape(item.elements[0].text).replace(/(\n|\r)/g, ' ');
         const colorStyle = css(currentTextNo == i && styles.textColor);
+        
         textArray.push(
           <a key={i} id={i} start={start} className={colorStyle} onClick={seekToYoutube}>
-            {text.split(' ').map((word, i) => (
-              <span key={i} onMouseOver={textHover}>
+            {text.split(' ').map((word, j) => (
+              <span key={j} onMouseOver={textHover}>
                 {word + ' '}
               </span>
             ))}
           </a>
         );
-      }
+      })
     }
 
     return (
-      <div className={css(styles.textBox)}>
-        <Typography className={css(styles.text)}>{textArray}</Typography>
+      <div style={{marginTop: 10}}>
+        <Card id="subtitle" className={css(styles.textBox)}>
+        <CardContent>
+          <div style={{margin: '10px'}}>
+            <Typography className={css(styles.text)}>{textArray}</Typography>
+          </div>
+          </CardContent>
+        </Card>
+        {/* <FormControl>
+            <Select
+              open={this.state.open}
+              onClose={this.handleClose}
+              onOpen={this.handleOpen}
+              value={this.state.age}
+              onChange={this.handleChange}
+              inputProps={{
+                name: 'age',
+                id: 'demo-controlled-open-select',
+              }}
+            >
+              <MenuItem value={10}>English</MenuItem>
+              <MenuItem value={20}>日本語</MenuItem>
+              <MenuItem value={30}>Italy</MenuItem>
+            </Select>
+       </FormControl> */}
       </div>
     );
   }
@@ -42,13 +103,14 @@ export default class Subtitle extends Component {
 
 const styles = StyleSheet.create({
   textBox: {
-    height: '85vh',
+    height: '80vh',
     textAlign: 'left',
-    padding: '20px',
+    //padding: '10px',
     overflow: 'auto',
     controls: 0,
     WebkitOverflowScrolling: 'touch',
-    overflowScrolling: 'touch'
+    overflowScrolling: 'touch',
+    //border: '1px solid #a5a2a6'
     // [theme.breakpoints.down('sm')]: {
     //   height: '60vh'
     // }
