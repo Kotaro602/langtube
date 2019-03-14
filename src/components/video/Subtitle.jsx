@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom';
 import { StyleSheet, css } from 'aphrodite';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import $ from 'jquery';
-import unescape from 'unescape';
+import decode from 'unescape';
+import { FadeLoader } from 'react-spinners';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-
-
+import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 
 export default class Subtitle extends Component {
@@ -20,82 +20,93 @@ export default class Subtitle extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      age: '',
-      open: false,
+      loading: true,
+      textScroll: true
     };
-  
+    this.changeTextScroll = this.changeTextScroll.bind(this);
   }
 
-  componentDidUpdate(){
+  componentDidUpdate() {
     const node = document.getElementById(this.props.currentTextNo);
     setTimeout(() => {
-      $('#subtitle').animate({scrollTop: node.offsetTop - 250}, 350, 'linear');
+      if (this.state.textScroll) {
+        $('#subtitle').animate({ scrollTop: node.offsetTop - 250 }, 350, 'linear');
+      }
     }, 50);
   }
 
-  handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
-  };
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.subtitleList) this.setState({ loading: false });
+  }
 
-  handleClose = () => {
-    this.setState({ open: false });
-  };
-
-  handleOpen = () => {
-    this.setState({ open: true });
-  };
-
+  changeTextScroll() {
+    this.setState({ textScroll: !this.state.textScroll });
+  }
 
   render() {
-    const { width, seekToYoutube, subtitle, currentTextNo, textHover } = this.props;
-
-    //console.log(decode('&lt;div&gt;abc&lt;/div&gt;'));
+    const {
+      width,
+      seekToYoutube,
+      subtitle,
+      subtitleLang,
+      subtitleList,
+      currentTextNo,
+      textHover,
+      changeSubtitle
+    } = this.props;
 
     let textArray = [];
     if (subtitle) {
       subtitle.forEach((item, i) => {
         const start = item.attributes.start;
-        const text = unescape(item.elements[0].text).replace(/(\n|\r)/g, ' ');
+        const text = item.elements ? decode(item.elements[0].text).replace(/(\n|\r)/g, ' ') : '';
         const colorStyle = css(currentTextNo == i && styles.textColor);
-        
+
         textArray.push(
           <a key={i} id={i} start={start} className={colorStyle} onClick={seekToYoutube}>
             {text.split(' ').map((word, j) => (
               <span key={j} onMouseOver={textHover}>
-                {word + ' '}
+                {' ' + word}
               </span>
             ))}
           </a>
         );
-      })
+      });
     }
-
     return (
-      <div style={{marginTop: 10}}>
+      <div>
         <Card id="subtitle" className={css(styles.textBox)}>
-        <CardContent>
-          <div style={{margin: '10px'}}>
-            <Typography className={css(styles.text)}>{textArray}</Typography>
-          </div>
+          <CardContent>
+            <div style={{ margin: '10px' }}>
+              <FadeLoader sizeUnit={'px'} size={150} color={'#123abc'} loading={this.state.loading} />
+              <Typography className={css(styles.text)}>{textArray}</Typography>
+            </div>
           </CardContent>
         </Card>
-        {/* <FormControl>
-            <Select
-              open={this.state.open}
-              onClose={this.handleClose}
-              onOpen={this.handleOpen}
-              value={this.state.age}
-              onChange={this.handleChange}
-              inputProps={{
-                name: 'age',
-                id: 'demo-controlled-open-select',
-              }}
-            >
-              <MenuItem value={10}>English</MenuItem>
-              <MenuItem value={20}>日本語</MenuItem>
-              <MenuItem value={30}>Italy</MenuItem>
+        <div className={css(styles.configBox)}>
+          <FormControl className={css(styles.formControl)}>
+            <Select value={subtitleLang} onChange={changeSubtitle} className={css(styles.formSelect)}>
+              {subtitleList &&
+                subtitleList.map((item, i) => {
+                  return (
+                    <MenuItem key={i} value={item.attributes.lang_code}>
+                      {item.attributes.lang_original}
+                    </MenuItem>
+                  );
+                })}
             </Select>
-       </FormControl> */}
+          </FormControl>
+          <Button
+            variant="outlined"
+            color="primary"
+            className={css(styles.playButton)}
+            onClick={this.changeTextScroll}>
+            <Icon className={css(styles.playIcon)}>
+              {this.state.textScroll ? 'pause_icon' : 'play_arrow'}
+            </Icon>
+            <span className={css(styles.playText)}>text scroll</span>
+          </Button>
+        </div>
       </div>
     );
   }
@@ -103,13 +114,12 @@ export default class Subtitle extends Component {
 
 const styles = StyleSheet.create({
   textBox: {
-    height: '80vh',
+    height: 'calc(100vh - 180px)',
     textAlign: 'left',
-    //padding: '10px',
     overflow: 'auto',
     controls: 0,
     WebkitOverflowScrolling: 'touch',
-    overflowScrolling: 'touch',
+    overflowScrolling: 'touch'
     //border: '1px solid #a5a2a6'
     // [theme.breakpoints.down('sm')]: {
     //   height: '60vh'
@@ -125,5 +135,29 @@ const styles = StyleSheet.create({
   },
   textColor: {
     backgroundColor: 'yellow !important'
+  },
+  configBox: {},
+  formControl: {
+    margin: '10px 20px',
+    width: 140
+  },
+  formSelect: {
+    maxWidth: 200,
+    fontSize: 14
+  },
+  playButton: {
+    float: 'right',
+    margin: '10px 5px',
+    width: 130,
+    minHeight: 30
+  },
+  playIcon: {
+    position: 'absolute',
+    left: 10
+  },
+  playText: {
+    position: 'absolute',
+    right: 10,
+    fontSize: 13
   }
 });

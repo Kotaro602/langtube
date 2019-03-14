@@ -22,12 +22,11 @@ export default class RelatedVideo extends Component {
   }
 
   componentDidMount() {
-    //get related videos
     getRelatedVideo(this.props.videoId, 24).then(json => this.setState({ relatedVideoList: json }));
   }
 
   boxOnClick(id) {
-    if (!this.sliderFlg) document.location.href = `/?videoId=${id}`;
+    if (!this.sliderFlg) document.location.href = `/watch/?videoId=${id}`;
   }
 
   beforeChangeSlider() {
@@ -39,13 +38,18 @@ export default class RelatedVideo extends Component {
   }
 
   render() {
+    const { width } = this.props;
+
+    console.log(width);
+
     var settings = {
       //infinite: true,
       // draggable: true,
       // centerMode: true,
       //fade: true,
+      lazyLoad: true,
       arrows: true,
-      centerPadding: 80,
+      centerPadding: 50,
       speed: 500,
       slidesToShow: 5,
       slidesToScroll: 5,
@@ -53,23 +57,24 @@ export default class RelatedVideo extends Component {
       nextArrow: <NextArrow />,
       prevArrow: <PrevArrow />,
       beforeChange: this.beforeChangeSlider,
-      afterChange: this.afterChangeSlider
-      // responsive: [
-      //   {
-      //     breakpoint: 1880,
-      //     settings: {
-      //       dots: false,
-      //       swipeToShow: 4,
-      //       centerPadding: 0
-      //     },
-      //     breakpoint: 1450,
-      //     settings: {
-      //       dots: false,
-      //       swipeToShow: 4,
-      //       centerPadding: -50
-      //     }
-      //   }
-      // ]
+      afterChange: this.afterChangeSlider,
+      responsive: [
+        {
+          breakpoint: 1930, //under
+          settings: {
+            centerPadding: 90,
+            slidesToShow: 4,
+            slidesToScroll: 4
+          }
+        },
+        {
+          breakpoint: 1600, //under
+          settings: {
+            slidesToShow: 3,
+            slidesToScroll: 3
+          }
+        }
+      ]
     };
 
     return (
@@ -78,16 +83,13 @@ export default class RelatedVideo extends Component {
           {this.state.relatedVideoList &&
             this.state.relatedVideoList.items.map((item, i) => {
               return (
-                <div key={i} className={css(styles.box)} onClick={this.boxOnClick.bind(this, item.id.videoId)}>
-                  <img
-                    src={item.snippet.thumbnails.medium.url}
-                    className={css(styles.image)}
-                    href={`/?videoId=${item.id.videoId}`}
-                  />
+                <div
+                  key={i}
+                  className={css(styles.box)}
+                  onClick={this.boxOnClick.bind(this, item.id.videoId)}>
+                  <img src={item.snippet.thumbnails.medium.url} className={css(styles.image)} />
                   <div className={css(styles.titleBox)}>
-                    <p className={css(styles.title)} href={`/?videoId=${item.id.videoId}`}>
-                      {item.snippet.title}
-                    </p>
+                    <p className={css(styles.title)}>{item.snippet.title}</p>
                   </div>
                 </div>
               );
@@ -101,7 +103,10 @@ export default class RelatedVideo extends Component {
 function PrevArrow(props) {
   const { className, style, onClick } = props;
   return (
-    <div className={css(styles.arrowBox, styles.arrowPrev)} style={{ ...style, display: 'block' }} onClick={onClick}>
+    <div
+      className={css(styles.arrowBox, styles.arrowPrev)}
+      style={{ ...style, display: 'block' }}
+      onClick={onClick}>
       <img src="/img/arrow-prev.png" className={css(styles.arrowImg)} />
     </div>
   );
@@ -110,17 +115,29 @@ function PrevArrow(props) {
 function NextArrow(props) {
   const { className, style, onClick } = props;
   return (
-    <div className={css(styles.arrowBox, styles.arrowNext)} style={{ ...style, display: 'block' }} onClick={onClick}>
+    <div
+      className={css(styles.arrowBox, styles.arrowNext)}
+      style={{ ...style, display: 'block' }}
+      onClick={onClick}>
       <img src="/img/arrow-next.png" className={css(styles.arrowImg)} />
     </div>
   );
 }
 
 const styles = StyleSheet.create({
+  sliderBox: {
+    margin: '20px 25px 0px 20px'
+  },
   box: {
     textAlign: 'left',
     cursor: 'pointer',
-    marginLeft: 10,
+    marginLeft: 'calc(calc(100% - 145px)/2)',
+    // '@media (max-width: 3000)': {
+    //   marginLeft: 15
+    // },
+    // '@media (max-width: 1930)': {
+    //   marginLeft: 100
+    // },
     ':focus': {
       outline: 'none'
     }
@@ -158,8 +175,7 @@ const styles = StyleSheet.create({
     right: -20
   },
   arrowPrev: {
-    left: -15,
-    zIndex: 100
+    left: -20
   },
   arrowImg: {
     width: 20

@@ -11,9 +11,12 @@ module.exports = {
   },
   devServer: {
     contentBase: 'public',
-    //host: '0.0.0.0',
     port: 8080,
-    disableHostCheck: true
+    proxy: {
+      '*': {
+        target: 'http://localhost:8081'
+      }
+    }
   },
   devtool: 'inline-source-map',
   module: {
