@@ -15,28 +15,28 @@ class LoginModal extends React.Component {
     console.log('after login');
   };
 
-  componentDidUpdate() {
-    if (this.props.gapi) {
-      this.props.gapi.signin2.render('google-signin-button', {
-        theme: 'dark',
-        longtitle: true,
-        onsuccess: this.test,
-        onfailure: console.error('sometging')
-      });
-    }
-  }
+  // componentDidUpdate() {
+  //   if (this.props.gapi) {
+  //     this.props.gapi.signin2.render('google-signin-button', {
+  //       theme: 'dark',
+  //       longtitle: true,
+  //       onsuccess: this.test,
+  //       onfailure: console.error('sometging')
+  //     });
+  //   }
+  // }
 
   render() {
     const { modalOpen, modalClose, gapi, ...other } = this.props;
 
-    // if (this.props.gapi) {
-    //   this.props.gapi.signin2.render('google-signin-button', {
-    //     theme: 'dark',
-    //     longtitle: true,
-    //     onsuccess: this.props.onSignIn,
-    //     onfailure: err => console.error(err)
-    //   });
-    // }
+    if (this.props.gapi) {
+      this.props.gapi.signin2.render('google-signin-button', {
+        theme: 'dark',
+        longtitle: true,
+        onsuccess: console.log('success'),
+        onfailure: console.log('error')
+      });
+    }
     return (
       <Dialog onClose={modalClose} open={this.props.open}>
         <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
