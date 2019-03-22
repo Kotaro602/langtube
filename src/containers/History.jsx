@@ -18,8 +18,12 @@ class History extends Component {
   }
 
   componentDidMount() {
-    ReadViewHisoty(firebaseApp.auth().currentUser).then(result => {
-      this.setState({ result: result });
+    firebaseApp.auth().onAuthStateChanged(user => {
+      if (user) {
+        ReadViewHisoty(firebaseApp.auth().currentUser).then(result => {
+          this.setState({ result: result });
+        });
+      }
     });
   }
 

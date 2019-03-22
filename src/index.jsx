@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { firebaseApp } from '../config.js';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import ReactQueryParams from 'react-query-params';
+
 import Home from './containers/Home';
 import Watch from './containers/Watch';
 import Search from './containers/Search';
 import History from './containers/History';
 import Header from './components/Header';
 import LoginModal from './components/LoginModal';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { ReadViewHisoty } from './api/FirebaseAPI';
 
 const NotFound = () => {
   return <h2>Not Found</h2>;
 };
 
-class App extends Component {
+class App extends ReactQueryParams {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,7 +45,7 @@ class App extends Component {
             <Header firebaseApp={firebaseApp} user={this.state.user} />
             <Switch>
               <Route exact path="/" component={Home} />
-              <Route path="/watch/:videoId" component={Watch} />
+              <Route path="/watch" component={Watch} />} />
               <Route path="/search" component={Search} />
               <Route path="/history" component={History} />
               <Route component={NotFound} />

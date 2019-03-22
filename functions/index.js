@@ -5,9 +5,10 @@ const path = require('path');
 var fs = require('fs')
 var getYoutubeSubtitles = require('@joegesualdo/get-youtube-subtitles-node')
 var getYoutubeSubtitleUrl = require('@joegesualdo/get-youtube-subtitle-url-node').default;
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 app.get('/api/getsubtitleurl', function (req, res) {
+    console.log('bbb')
     getYoutubeSubtitleUrl(req.query.videoId, {
             type: 'auto'
         })
@@ -19,10 +20,10 @@ app.get('/api/getsubtitleurl', function (req, res) {
         })
 })
 
-app.get('*', (req, res) => {
-    console.log('testtt')
-    res.sendFile(path.join(__dirname + '/../public/index.html'));
-});
+// app.get('*', (req, res) => {
+//     console.log(req.url)
+//     res.sendFile(path.resolve(__dirname + '/../public/index.html'));
+// });
 
 var server = app.listen(8081, function () {
     var host = server.address().address

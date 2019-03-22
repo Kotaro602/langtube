@@ -5,11 +5,11 @@ import { StyleSheet, css } from 'aphrodite';
 import { Link } from 'react-router-dom';
 import { getSearchResult } from '../api/YoutubeAPI';
 import queryString from 'query-string';
-
 import withRoot from '../withRoot';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
+import { imageUrl } from '../../app-const';
 
 export default class List extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
@@ -20,7 +20,6 @@ export default class List extends Component {
 
   render() {
     const { result } = this.props;
-    console.log(result);
     return (
       <div style={{}}>
         <Card className={css(styles.listCard)}>
@@ -28,8 +27,8 @@ export default class List extends Component {
             result.map((item, i) => {
               return (
                 <div key={i} className={css(styles.eachBox)}>
-                  <Link to={`/watch/${item.id.videoId}/`}>
-                    <img src={item.snippet.thumbnails.medium.url} className={css(styles.img)} />
+                  <Link to={`/watch/?videoId=${item.id.videoId}`}>
+                    <img src={`${imageUrl}${item.id.videoId}/mqdefault.jpg`} className={css(styles.img)} />
                     <div className={css(styles.infoBox)}>
                       <p className={css(styles.title)}>{item.snippet.title}</p>
                       <p className={css(styles.description)}>{item.snippet.description}</p>

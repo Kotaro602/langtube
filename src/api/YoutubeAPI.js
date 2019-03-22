@@ -6,6 +6,7 @@ import {
 } from '../../config.js';
 import getQueryString from '../util/urlParameterUtil'
 import convert from 'xml-js'
+//import getYoutubeSubtitleUrl from '@joegesualdo/get-youtube-subtitle-url-node';
 
 export function getVideoInfo(videoId) {
     const params = {
@@ -81,7 +82,7 @@ export async function getSubtitle(videoId, langage) {
 
     } else { //targetがない場合
         //Autoの字幕を取得
-        subtitle = await getAutoSubtitle(videoId);
+        subtitle = null //TODO: await getAutoSubtitle(videoId);
 
         if (subtitle) { //取得できたら
 

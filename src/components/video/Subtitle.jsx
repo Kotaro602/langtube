@@ -5,6 +5,7 @@ import shouldPureComponentUpdate from 'react-pure-render/function';
 import $ from 'jquery';
 import decode from 'unescape';
 import { FadeLoader } from 'react-spinners';
+import windowSize from 'react-window-size';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -13,7 +14,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 
-export default class Subtitle extends Component {
+class Subtitle extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
 
   constructor(props) {
@@ -27,9 +28,13 @@ export default class Subtitle extends Component {
 
   componentDidUpdate() {
     const node = document.getElementById(this.props.currentTextNo);
+    const $subtitle = $('#subtitle');
+    const targetHeight =
+      this.props.windowWidth > 1050 ? $subtitle.height() * 0.35 : $subtitle.height() * 0.15;
+
     setTimeout(() => {
       if (this.state.textScroll) {
-        $('#subtitle').animate({ scrollTop: node.offsetTop - 250 }, 350, 'linear');
+        $subtitle.animate({ scrollTop: node.offsetTop - targetHeight }, 350, 'linear');
       }
     }, 50);
   }
@@ -44,7 +49,7 @@ export default class Subtitle extends Component {
 
   render() {
     const {
-      width,
+      windowWidth,
       seekToYoutube,
       subtitle,
       subtitleLang,
@@ -74,7 +79,7 @@ export default class Subtitle extends Component {
       });
     }
     return (
-      <div>
+      <div className={css(styles.subtitleBox)}>
         <Card id="subtitle" className={css(styles.textBox)}>
           <CardContent>
             <div style={{ margin: '10px' }}>
@@ -83,47 +88,67 @@ export default class Subtitle extends Component {
             </div>
           </CardContent>
         </Card>
-        <div className={css(styles.configBox)}>
-          <FormControl className={css(styles.formControl)}>
-            <Select value={subtitleLang} onChange={getVideoData} className={css(styles.formSelect)}>
-              {subtitleList &&
-                subtitleList.map((item, i) => {
-                  return (
-                    <MenuItem key={i} value={item.attributes.lang_code}>
-                      {item.attributes.lang_original}
-                    </MenuItem>
-                  );
-                })}
-            </Select>
-          </FormControl>
-          <Button
-            variant="outlined"
-            color="primary"
-            className={css(styles.playButton)}
-            onClick={this.changeTextScroll}>
-            <Icon className={css(styles.playIcon)}>
-              {this.state.textScroll ? 'pause_icon' : 'play_arrow'}
-            </Icon>
-            <span className={css(styles.playText)}>text scroll</span>
-          </Button>
-        </div>
+        {windowWidth > 1050 && (
+          <div className={css(styles.configBox)}>
+            <FormControl className={css(styles.formControl)}>
+              <Select value={subtitleLang} onChange={getVideoData} className={css(styles.formSelect)}>
+                {subtitleList &&
+                  subtitleList.map((item, i) => {
+                    return (
+                      <MenuItem key={i} value={item.attributes.lang_code}>
+                        {item.attributes.lang_original}
+                      </MenuItem>
+                    );
+                  })}
+              </Select>
+            </FormControl>
+            <Button
+              variant="outlined"
+              color="primary"
+              className={css(styles.playButton)}
+              onClick={this.changeTextScroll}>
+              <Icon className={css(styles.playIcon)}>
+                {this.state.textScroll ? 'pause_icon' : 'play_arrow'}
+              </Icon>
+              <span className={css(styles.playText)}>text scroll</span>
+            </Button>
+          </div>
+        )}
       </div>
     );
   }
 }
 
+export default windowSize(Subtitle);
+
 const styles = StyleSheet.create({
+  subtitleBox: {
+    position: 'relative',
+    '@media (min-width: 800px)': {
+      height: 'calc(100vh - 180px)'
+    },
+    '@media (max-width: 800px)': {
+      height: 'calc(100vh - calc(100vw * 9 / 16))'
+    }
+  },
   textBox: {
-    height: 'calc(100vh - 180px)',
+    // position: 'absolute',
+    // top: 0,
+    // left: 0,
+    // width: '100%',
+    // height: '100%',
+    position: 'relative',
+    '@media (min-width: 800px)': {
+      height: 'calc(100vh - 180px)'
+    },
+    '@media (max-width: 800px)': {
+      height: 'calc(100vh - calc(100vw * 9 / 16))'
+    },
     textAlign: 'left',
     overflow: 'auto',
     controls: 0,
     WebkitOverflowScrolling: 'touch',
     overflowScrolling: 'touch'
-    //border: '1px solid #a5a2a6'
-    // [theme.breakpoints.down('sm')]: {
-    //   height: '60vh'
-    // }
   },
   text: {
     fontFamily: 'system-ui',

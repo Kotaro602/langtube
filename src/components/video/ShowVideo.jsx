@@ -21,44 +21,11 @@ export default class ShowVideo extends Component {
     };
   }
 
-  componentDidMount() {
-    document.getElementById('youtubeVideoBox').addEventListener('mouseover', function() {
-      window.focus();
-    });
-
-    document.getElementById('youtubeVideoBox').addEventListener('mouseout', function() {
-      window.focus();
-    });
-  }
-
   render() {
-    const { width, videoId, videoInfo, onReady, stateChange, onPlaybackRateChange } = this.props;
-    const opts = {
-      playerVars: {
-        autoplay: 0,
-        controls: 2,
-        playsinline: 1,
-        rel: 0,
-        disablekb: 1
-      }
-    };
+    const { videoInfo } = this.props;
 
     return (
       <div>
-        <div className={css(styles.youtubeBox)} id="youtubeVideoBox">
-          <YouTube
-            videoId={videoId}
-            opts={opts}
-            className={css(styles.youtubeStyle)}
-            onReady={onReady}
-            onStateChange={stateChange}
-            onPlaybackRateChange={onPlaybackRateChange}
-          />
-          {/* <IconButton style={{ color: 'red' }} aria-label="Delete" color="inherit" label="test">
-            <Icon className={css(styles.bookmarkIcon)}>bookmark</Icon>
-          </IconButton> */}
-        </div>
-
         {videoInfo && (
           <Card className={css(styles.videoInfoCard)}>
             <div className={css(styles.infoBox)}>
@@ -89,17 +56,6 @@ export default class ShowVideo extends Component {
 }
 //bookmark_border
 const styles = StyleSheet.create({
-  youtubeStyle: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%'
-  },
-  youtubeBox: {
-    position: 'relative',
-    paddingBottom: '56.25%'
-  },
   videoInfoCard: {
     position: 'relative',
     margin: '7px 0px'

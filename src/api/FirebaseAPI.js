@@ -4,51 +4,44 @@ import {
 import ellipsis from 'text-ellipsis';
 
 export function registerViewHistory(user, video) {
-    firestore
-        .collection('viewHistory')
-        .doc(user.uid + video.id)
-        .set({
-            videoId: video.id,
+
+    const info = {
+        id: {
+            videoId: video.id
+        },
+        snippet: {
             title: video.snippet.title,
-            description: video.snippet.description,
-            thumbnails: video.snippet.thumbnails.medium.url,
-            date: new Date(),
-            userId: user.uid
-        })
-        .then(() => {
-            console.log('success');
-        });
+            description: ellipsis(video.snippet.description, 160, {
+                ellipsis: '...'
+            }),
+        },
+        date: new Date()
+    }
+
+    ReadViewHisoty(user).then(latestHistoryList => {
+        let historyList = latestHistoryList.filter(item => item.id.videoId != video.id);
+        historyList.unshift(info);
+
+        firestore
+            .collection('history')
+            .doc(user.uid)
+            .set({
+                historyList: historyList
+            })
+            .then(() => {
+                console.log('history write success');
+            });
+    })
+
 }
 
 export function ReadViewHisoty(user) {
-    console.log('tessss')
+    console.log('readStart')
     return firestore
-        .collection('viewHistory')
-        .where("userId", "==", user.uid)
-        .orderBy("date", "desc")
+        .collection('history')
+        .doc(user.uid)
         .get()
         .then((querySnapshot) => {
-            const result = [];
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const item = {
-                    id: {
-                        videoId: data.videoId
-                    },
-                    snippet: {
-                        title: data.title,
-                        description: ellipsis(data.description, 160, {
-                            ellipsis: '...'
-                        }),
-                        thumbnails: {
-                            medium: {
-                                url: data.thumbnails
-                            }
-                        }
-                    }
-                }
-                result.push(item);
-            })
-            return result;
+            return querySnapshot.data() ? querySnapshot.data().historyList : [];
         });
 }

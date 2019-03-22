@@ -36,7 +36,7 @@ export default class Dictionary extends Component {
   }
 
   render() {
-    const { searchWord, mousePosition } = this.props;
+    const { searchWord } = this.props;
     const searchResult = getSearchWordsArray(searchWord, this.dictionary);
 
     return (
@@ -44,11 +44,11 @@ export default class Dictionary extends Component {
         {searchWord && (
           <Draggable
             handle=".handle"
-            position={{ x: mousePosition.X + 30, y: mousePosition.Y - 930 }}
+            position={{ x: 10, y: -140 }}
             onStart={this.handleStart}
             onDrag={this.handleDrag}
             onStop={this.handleStop}>
-            <div className="handle" style={{ position: 'absolute' }}>
+            <div className="handle" style={{ zIndex: 1000, position: 'absolute' }}>
               <div className={css(styles.box)}>
                 {searchResult &&
                   searchResult.map((result, i) => {
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
   box: {
     backgroundColor: '#fff',
     border: '1px solid #999',
-    width: '360px',
-    height: '200px',
+    width: '400px',
+    height: '300px',
     display: 'inline-block',
     cursor: 'move',
     opacity: '0.95',

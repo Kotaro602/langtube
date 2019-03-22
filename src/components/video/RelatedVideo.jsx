@@ -25,7 +25,6 @@ export default class RelatedVideo extends Component {
   componentWillReceiveProps(nextProps) {
     //TODO: 親で呼ぶように変更する、親のcomponentDidMountで取得した後だから、こちらのDidMountでは取得できない
     if (this.state.relatedVideoList === null && nextProps.videoInfo) {
-      console.log('call recommend');
       getRelatedVideo(nextProps.videoInfo.snippet.categoryId, 50).then(json =>
         this.setState({ relatedVideoList: json })
       );
@@ -89,7 +88,7 @@ export default class RelatedVideo extends Component {
             this.state.relatedVideoList.items.map((item, i) => {
               return (
                 <div key={i} className={css(styles.box)}>
-                  <Link to={`/watch/${item.id.videoId}/`}>
+                  <Link to={`/watch/?videoId=${item.id.videoId}`}>
                     <img src={item.snippet.thumbnails.medium.url} className={css(styles.image)} />
                     <div className={css(styles.titleBox)}>
                       <p className={css(styles.title)}>{item.snippet.title}</p>

@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import withRoot from '../withRoot';
-import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+import windowSize from 'react-window-size';
 import { StyleSheet, css } from 'aphrodite';
+import moment from 'moment';
+import ellipsis from 'text-ellipsis';
 import Slider from 'react-slick';
 import shuffle from 'shuffle-array';
 import { Link } from 'react-router-dom';
-import { firebaseApp } from '../../config.js';
-import { getSearchResult } from '../api/YoutubeAPI';
 import { Card } from '@material-ui/core';
 
 class VideoSlick extends Component {
@@ -19,90 +18,114 @@ class VideoSlick extends Component {
     this.state = {
       result: null
     };
-  }
-
-  beforeChangeSlider() {
-    this.sliderFlg = true;
-  }
-  afterChangeSlider() {
-    this.sliderFlg = false;
-  }
-
-  render() {
-    const settings = {
+    this.settings = {
       infinite: true,
-      // draggable: true,
-      // centerMode: true,
-      //fade: true,
       lazyLoad: true,
-      dots: false,
-      //   arrows: true,
-      //   centerPadding: 50,
-      speed: 500,
-      //   slidesToShow: 5,
-      //   slidesToScroll: 5,
-      //   initialSlide: 0,
-      //   beforeChange: this.beforeChangeSlider,
-      //   afterChange: this.afterChangeSlider,
       nextArrow: <NextArrow />,
       prevArrow: <PrevArrow />,
       responsive: [
         {
-          breakpoint: 1930, //under
+          breakpoint: 3000, //under
           settings: {
-            //centerPadding: 90,
             slidesToShow: 6,
             slidesToScroll: 4
           }
         },
         {
-          breakpoint: 1200, //under
+          breakpoint: 1400, //under
           settings: {
             slidesToShow: 3,
-            slidesToScroll: 3
+            slidesToScroll: 2
           }
         }
       ]
     };
+  }
 
-    const recList = this.props.recommendList.items ? shuffle(this.props.recommendList.items) : null;
+  render() {
+    const { windowWidth, recommendList } = this.props;
+
+    let recList;
+    if (!recommendList.items) {
+      recList = null;
+    } else if (windowWidth > 800) {
+      recList = shuffle(recommendList.items);
+    } else {
+      recList = shuffle(recommendList.items).slice(0, 7);
+    }
 
     return (
-      <Card className={css(styles.sliderBox)}>
-        <div>
-          <h4 className={css(styles.boxTitle)}>{this.props.title}</h4>
-          <Slider {...settings}>
+      <div>
+        {/* PC */}
+        {windowWidth > 800 && (
+          <Card className={css(pcStyles.sliderBox)}>
+            <h4 className={css(pcStyles.boxTitle)}>{this.props.title}</h4>
+            <Slider {...this.settings}>
+              {recList &&
+                recList.map((item, i) => {
+                  return (
+                    <div key={i} className={css(pcStyles.box)}>
+                      <Link to={`/watch/?videoId=${item.id.videoId}`} className={css(pcStyles.link)}>
+                        <img src={item.snippet.thumbnails.medium.url} className={css(pcStyles.image)} />
+                        <div className={css(pcStyles.titleBox)}>
+                          <p className={css(pcStyles.title)}>{item.snippet.title}</p>
+                        </div>
+                        <span className={css(pcStyles.channelTitle)}>
+                          {ellipsis(item.snippet.channelTitle, 25, { ellipsis: '...' })}
+                          {'  '}
+                        </span>
+                        <span className={css(pcStyles.publishedAt)}>
+                          {moment(item.snippet.publishedAt).format('DD MMM YYYY')}
+                        </span>
+                      </Link>
+                    </div>
+                  );
+                })}
+            </Slider>
+          </Card>
+        )}
+        {/* SP */}
+        {windowWidth < 800 && (
+          <Card className={css(spStyles.sliderBox)}>
+            <h4 className={css(spStyles.boxTitle)}>{this.props.title}</h4>
             {recList &&
               recList.map((item, i) => {
                 return (
-                  <div key={i} className={css(styles.box)}>
-                    <Link to={`/watch/${item.id.videoId}/`} className={css(styles.link)}>
-                      <img src={item.snippet.thumbnails.medium.url} className={css(styles.image)} />
-                      <div className={css(styles.titleBox)}>
-                        <p className={css(styles.title)}>{item.snippet.title}</p>
+                  <div key={i} className={css(spStyles.box)}>
+                    <Link to={`/watch/?videoId=${item.id.videoId}`} className={css(spStyles.link)}>
+                      <img src={item.snippet.thumbnails.medium.url} className={css(spStyles.image)} />
+                      <div className={css(spStyles.titleBox)}>
+                        <p className={css(spStyles.title)}>{item.snippet.title}</p>
                       </div>
+                      <span className={css(spStyles.channelTitle)}>
+                        {item.snippet.channelTitle}
+                        {'  '}
+                      </span>
+                      <span className={css(spStyles.publishedAt)}>
+                        {moment(item.snippet.publishedAt).format('DD MMM YYYY')}
+                      </span>
                     </Link>
                   </div>
                 );
               })}
-          </Slider>
-        </div>
-      </Card>
+          </Card>
+        )}
+      </div>
     );
   }
 }
 
 //TODO: componentを使ってみる
-export default withRoot(withWidth()(VideoSlick));
+export default withRoot(windowSize(VideoSlick));
 
 function PrevArrow(props) {
   const { className, style, onClick } = props;
   return (
     <div
-      className={css(styles.arrowBox, styles.arrowPrev)}
+      className={css(pcStyles.arrowBox, pcStyles.arrowPrev)}
       style={{ ...style, display: 'block' }}
       onClick={onClick}>
-      <img src="/img/arrow-prev.png" className={css(styles.arrowImg)} />
+      <img src="/img/arrow-prev.png" className={css(pcStyles.arrowImg)} />
     </div>
   );
 }
@@ -111,20 +134,26 @@ function NextArrow(props) {
   const { className, style, onClick } = props;
   return (
     <div
-      className={css(styles.arrowBox, styles.arrowNext)}
+      className={css(pcStyles.arrowBox, pcStyles.arrowNext)}
       style={{ ...style, display: 'block' }}
       onClick={onClick}>
-      <img src="/img/arrow-next.png" className={css(styles.arrowImg)} />
+      <img src="/img/arrow-next.png" className={css(pcStyles.arrowImg)} />
     </div>
   );
 }
 
-const styles = StyleSheet.create({
+const pcStyles = StyleSheet.create({
   sliderBox: {
-    width: '1400px',
-    padding: '20px 30px',
-    marginTop: 20,
-    marginLeft: 'calc(calc(100% - 1400px)/2)'
+    '@media (min-width: 1400px)': {
+      width: '1400px',
+      marginLeft: 'calc(calc(100% - 1400px)/2)'
+    },
+    '@media (max-width: 1400px)': {
+      width: '800px',
+      marginLeft: 'calc(calc(100% - 800px)/2)'
+    },
+    padding: '20px 30px 8px 30px',
+    marginTop: 20
   },
   boxTitle: {
     margin: '0px 0px 10px 10px'
@@ -133,18 +162,13 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     cursor: 'pointer',
     marginLeft: 'calc(calc(100% - 210px)/2)',
-    // '@media (max-width: 3000)': {
-    //   marginLeft: 15
-    // },
-    // '@media (max-width: 1930)': {
-    //   marginLeft: 100
-    // },
     ':focus': {
       outline: 'none'
     }
   },
   link: {
-    textDecoration: 'none'
+    textDecoration: 'none',
+    color: 'black'
   },
   image: {
     width: 210
@@ -159,14 +183,19 @@ const styles = StyleSheet.create({
     display: '-webkit-box',
     WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 2,
-    color: 'black',
     fontWeight: 'bold',
     fontSize: '12px',
     overflow: 'hidden',
     wordWrap: 'nowrap',
     marginTop: 0,
     marginBottom: 0,
-    height: 40
+    height: 35
+  },
+  channelTitle: {
+    fontSize: '10px'
+  },
+  publishedAt: {
+    fontSize: '10px'
   },
   arrowBox: {
     position: 'absolute',
@@ -185,5 +214,48 @@ const styles = StyleSheet.create({
   },
   arrowImg: {
     width: 20
+  }
+});
+
+const spStyles = StyleSheet.create({
+  sliderBox: {
+    padding: '0px 10px',
+    margin: '20px 0px'
+  },
+  boxTitle: {
+    margin: '10px 0px'
+  },
+  box: {
+    margin: '13px 0px'
+  },
+  link: {
+    textDecoration: 'none',
+    color: 'black'
+  },
+  image: {
+    width: '100%'
+  },
+  titleBox: {
+    width: '100%',
+    wordWrap: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  },
+  title: {
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    fontWeight: 'bold',
+    fontSize: '12px',
+    overflow: 'hidden',
+    wordWrap: 'nowrap',
+    marginTop: 0,
+    marginBottom: 0
+  },
+  channelTitle: {
+    fontSize: '10px'
+  },
+  publishedAt: {
+    fontSize: '10px'
   }
 });

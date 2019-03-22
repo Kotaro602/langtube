@@ -4,6 +4,14 @@ export const youtubeUrls = {
     searchUrl: 'https://www.googleapis.com/youtube/v3/search?'
 }
 
+export const imageUrl = 'https://i.ytimg.com/vi/'
+/**
+default: {url: "https://i.ytimg.com/vi/SlNbUCJzJ4k/default.jpg", width: 120, height: 90}
+high: {url: "https://i.ytimg.com/vi/SlNbUCJzJ4k/hqdefault.jpg", width: 480, height: 360}
+medium: {url: "https://i.ytimg.com/vi/SlNbUCJzJ4k/mqdefault.jpg", width: 320, height: 180}
+ */
+
+
 export const category = [
     'Sports',
     'Travel',

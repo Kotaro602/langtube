@@ -2,18 +2,16 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import ShowVideo from '../components/video/ShowVideo';
 import RelatedVideo from '../components/video/RelatedVideo';
+import Youtube from '../components/video/Youtube';
 import Subtitle from '../components/video/Subtitle';
 import Dictionary from '../components/video/Dictionary';
 import { getVideoInfo, getSubtitle } from '../api/YoutubeAPI';
 import { registerViewHistory } from '../api/FirebaseAPI';
 import { firebaseApp } from '../../config.js';
-
+import windowSize from 'react-window-size';
 import ReactQueryParams from 'react-query-params';
-
 import withRoot from '../withRoot';
 import Hidden from '@material-ui/core/Hidden';
-import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
-import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
 class Watch extends ReactQueryParams {
@@ -23,10 +21,6 @@ class Watch extends ReactQueryParams {
       videoId: null,
       videoInfo: null,
       searchWord: null,
-      mousePosition: {
-        X: null,
-        Y: null
-      },
       relatedVideoList: null,
       subtitle: [],
       subtitleLang: 'en',
@@ -57,7 +51,7 @@ class Watch extends ReactQueryParams {
       }
     }, 200);
 
-    this.getVideoData(undefined, this.state.subtitleLang, this.props.match.params.videoId);
+    this.getVideoData(undefined, this.state.subtitleLang, this.props);
 
     window.addEventListener('keydown', event => {
       const code = event.keyCode;
@@ -99,25 +93,27 @@ class Watch extends ReactQueryParams {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.getVideoData(undefined, this.state.subtitleLang, nextProps.match.params.videoId);
+    this.getVideoData(undefined, this.state.subtitleLang, nextProps);
   }
 
-  getVideoData(event, changedLang, tempVideoId) {
+  getVideoData(event, changedLang, props) {
     //TODO: 暇があったら見直す
+    const videoId = this.queryParams.videoId;
     const lang = event ? event.target.value : changedLang;
-    const videoId = tempVideoId ? tempVideoId : this.state.videoId;
 
     getVideoInfo(videoId).then(res => {
       const videoInfoData = res.items[0];
       const user = firebaseApp.auth().currentUser;
-      if (user) {
-        registerViewHistory(user, videoInfoData);
+      if (user && this.state.videoId !== videoId) {
+        registerViewHistory(user, videoInfoData, props.historyList);
       }
+
       getSubtitle(videoId, lang).then(info => {
         let currentTimeArray = [];
         info.subtitle.forEach(text => {
           currentTimeArray.push(text.attributes.start);
         });
+
         this.setState(
           Object.assign(info, {
             videoId: videoId,
@@ -151,13 +147,8 @@ class Watch extends ReactQueryParams {
     });
   }
   textHover(event) {
-    //console.log(event.target);
     this.setState({
-      searchWord: event.target.textContent,
-      mousePosition: {
-        X: event.clientX,
-        Y: event.clientY
-      }
+      searchWord: event.target.textContent
     });
   }
   textOut(event) {
@@ -165,30 +156,56 @@ class Watch extends ReactQueryParams {
   }
 
   render() {
-    const { classes, width } = this.props;
+    const { windowWidth } = this.props;
 
     return (
       <div>
-        <Grid container spacing={16} direction="row-reverse" className={classes.root}>
-          <Hidden mdDown>
-            <Grid item xs={1} />
-          </Hidden>
-          <Grid item xs={12} md={6} lg={5} className={classes.right}>
-            <div>
-              <ShowVideo
-                width={width}
-                videoId={this.state.videoId}
-                videoInfo={this.state.videoInfo}
-                onReady={this.onReady}
-                stateChange={this.stateChange}
-                onPlaybackRateChange={this.onPlaybackRateChange}
+        {/* PC */}
+        {windowWidth > 960 && (
+          <Grid container spacing={16} direction="row-reverse">
+            <Hidden mdDown>
+              <Grid item xs={1} />
+            </Hidden>
+            <Grid item xs={12} md={6} lg={5}>
+              <div>
+                <Youtube
+                  videoId={this.state.videoId}
+                  onReady={this.onReady}
+                  stateChange={this.stateChange}
+                  onPlaybackRateChange={this.onPlaybackRateChange}
+                />
+                <ShowVideo videoInfo={this.state.videoInfo} />
+                <Dictionary searchWord={this.state.searchWord} />
+                <RelatedVideo videoInfo={this.state.videoInfo} />
+              </div>
+            </Grid>
+            <Grid item xs={12} md={6} lg={5}>
+              <Subtitle
+                currentTextNo={this.state.currentTextNo}
+                subtitle={this.state.subtitle}
+                subtitleLang={this.state.subtitleLang}
+                subtitleList={this.state.subtitleList}
+                seekToYoutube={this.seekToYoutube}
+                textHover={this.textHover}
+                textClear={this.textOut}
+                getVideoData={this.getVideoData}
               />
-              <RelatedVideo videoInfo={this.state.videoInfo} width={width} />
-            </div>
+            </Grid>
+            <Hidden mdDown>
+              <Grid item xs={1} />
+            </Hidden>
           </Grid>
-          <Grid item xs={12} md={6} lg={5} className={classes.left}>
+        )}
+        {/* SP */}
+        {windowWidth < 960 && (
+          <div>
+            <Youtube
+              videoId={this.state.videoId}
+              onReady={this.onReady}
+              stateChange={this.stateChange}
+              onPlaybackRateChange={this.onPlaybackRateChange}
+            />
             <Subtitle
-              width={width}
               currentTextNo={this.state.currentTextNo}
               subtitle={this.state.subtitle}
               subtitleLang={this.state.subtitleLang}
@@ -198,30 +215,12 @@ class Watch extends ReactQueryParams {
               textClear={this.textOut}
               getVideoData={this.getVideoData}
             />
-          </Grid>
-          <Hidden mdDown>
-            <Grid item xs={1} />
-          </Hidden>
-        </Grid>
-        <Dictionary searchWord={this.state.searchWord} mousePosition={this.state.mousePosition} />
+          </div>
+        )}
       </div>
     );
   }
 }
 
-const styles = theme => ({
-  root: {},
-  right: {
-    //marginTop: '4px',
-    // [theme.breakpoints.down('md')]: {
-    //   paddingRight: 20
-    // }
-  },
-  left: {
-    position: 'relative',
-    height: 'auto !important'
-  }
-});
-
 //TODO: componentを使ってみる
-export default withRoot(withStyles(styles)(withWidth()(Watch)));
+export default withRoot(windowSize(Watch));

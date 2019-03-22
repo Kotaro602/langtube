@@ -1,23 +1,14 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { StyleSheet, css } from 'aphrodite';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import withRoot from '../withRoot';
-import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import shuffle from 'shuffle-array';
 import { Link } from 'react-router-dom';
-
-import { firebaseApp } from '../../config.js';
+import windowSize from 'react-window-size';
 import { category } from '../../app-const.js';
 import VideoSlick from '../components/VideoSlick';
-import { ReadViewHisoty } from '../api/FirebaseAPI';
 import { getSearchResult } from '../api/YoutubeAPI';
-import Chip from '@material-ui/core/Chip';
-import Card from '@material-ui/core/Card';
-import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
 import Fab from '@material-ui/core/Fab';
-import NavigationIcon from '@material-ui/icons/Navigation';
 
 class Home extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
@@ -42,20 +33,24 @@ class Home extends Component {
   }
 
   render() {
+    const { windowWidth } = this.props;
+    console.log(windowWidth);
     const recommendLists = this.state.recommendList;
     return (
       <div>
-        <div className={css(styles.fabBox)}>
-          {this.state.shaffleList.slice(4, 12).map((item, i) => {
-            return (
-              <Link key={i} to={`/search/?q=${item}`}>
-                <Fab variant="extended" size="small" color="primary" className={css(styles.pillButton)}>
-                  <span className={css(styles.buttonText)}>{item}</span>
-                </Fab>
-              </Link>
-            );
-          })}
-        </div>
+        {windowWidth > 1000 && (
+          <div className={css(styles.fabBox)}>
+            {this.state.shaffleList.slice(4, 12).map((item, i) => {
+              return (
+                <Link key={i} to={`/search/?q=${item}`}>
+                  <Fab variant="extended" size="small" color="primary" className={css(styles.pillButton)}>
+                    <span className={css(styles.buttonText)}>{item}</span>
+                  </Fab>
+                </Link>
+              );
+            })}
+          </div>
+        )}
         {recommendLists && (
           <div>
             <VideoSlick title={this.state.shaffleList.slice(0, 1)} recommendList={recommendLists[0]} />
@@ -69,7 +64,7 @@ class Home extends Component {
 }
 
 //TODO: componentを使ってみる
-export default withRoot(withWidth()(Home));
+export default withRoot(windowSize(Home));
 
 const styles = StyleSheet.create({
   fabBox: {
