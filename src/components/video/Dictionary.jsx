@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import Draggable from 'react-draggable';
 import { StyleSheet, css } from 'aphrodite';
 import shouldPureComponentUpdate from 'react-pure-render/function';
-
+import windowSize from 'react-window-size';
 import { getSearchWordsArray } from '../../util/dictionaryUtil';
 
-export default class Dictionary extends Component {
+class Dictionary extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
 
   constructor(props) {
@@ -17,6 +17,7 @@ export default class Dictionary extends Component {
   dictionary = [];
 
   componentWillMount() {
+    //TODO: 英英辞書を作成する
     new Promise((resolve, reject) => {
       const url = `/data/dictionary.json`;
       const xhr = new XMLHttpRequest();
@@ -26,60 +27,65 @@ export default class Dictionary extends Component {
         return resolve(xhr.response);
       };
       xhr.send('');
-    })
-      .then(res => {
-        this.dictionary = res;
-      })
-      .catch(error => {
-        // TODO: エラーハンドリング
-      });
+    }).then(res => {
+      this.dictionary = res;
+    });
   }
 
   render() {
-    const { searchWord } = this.props;
+    const { windowWidth, searchWord, textClear } = this.props;
     const searchResult = getSearchWordsArray(searchWord, this.dictionary);
 
     return (
       <div>
         {searchWord && (
-          <Draggable
-            handle=".handle"
-            position={{ x: 10, y: -140 }}
-            onStart={this.handleStart}
-            onDrag={this.handleDrag}
-            onStop={this.handleStop}>
-            <div className="handle" style={{ zIndex: 1000, position: 'absolute' }}>
-              <div className={css(styles.box)}>
-                {searchResult &&
-                  searchResult.map((result, i) => {
-                    return (
-                      <div key={i} className={css(styles.searchBox)}>
-                        <span className={css(styles.searchWord)}>{result.t}</span>
-                        <span>{result.m}</span>
-                      </div>
-                    );
-                  })}
-              </div>
+          <div className={css(styles.parentBox)} onClick={textClear}>
+            <div className={css(styles.box)}>
+              {searchResult &&
+                searchResult.map((result, i) => {
+                  return (
+                    <div key={i} className={css(styles.searchBox)}>
+                      <span className={css(styles.searchWord)}>{result.t}</span>
+                      <span>{result.m}</span>
+                    </div>
+                  );
+                })}
             </div>
-          </Draggable>
+          </div>
         )}
       </div>
     );
   }
 }
+export default windowSize(Dictionary);
 
 const styles = StyleSheet.create({
+  parentBox: {
+    position: 'relative',
+    width: '100%'
+  },
   box: {
+    position: 'absolute',
+    zIndex: 1000,
     backgroundColor: '#fff',
     border: '1px solid #999',
-    width: '400px',
-    height: '300px',
     display: 'inline-block',
-    cursor: 'move',
     opacity: '0.95',
     overflow: 'hidden',
-    resize: 'both',
-    textAline: 'left'
+    textAline: 'left',
+    '@media (min-width: 1050px)': {
+      top: 5,
+      left: 5,
+      width: 'calc(100% - 10px)',
+      height: '33vh'
+    },
+    '@media (max-width: 1050px)': {
+      top: 'calc(3vw * 9 / 16)',
+      left: '3vw',
+      width: '94vw',
+      height: 'calc(94vw * 9 / 16)',
+      fontSize: 14
+    }
   },
   searchBox: {
     textAlign: 'left'

@@ -47,10 +47,6 @@ export default class RelatedVideo extends Component {
     const { width } = this.props;
 
     var settings = {
-      //infinite: true,
-      // draggable: true,
-      // centerMode: true,
-      //fade: true,
       lazyLoad: true,
       arrows: true,
       centerPadding: 50,

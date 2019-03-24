@@ -12,12 +12,12 @@ module.exports = {
   devServer: {
     contentBase: 'public',
     port: 8080,
-    historyApiFallback: true
-    // proxy: {
-    //   '*': {
-    //     target: 'http://localhost:8081'
-    //   }
-    // }
+    historyApiFallback: true,
+    proxy: {
+      '*': {
+        target: 'http://localhost:8081'
+      }
+    }
   },
   devtool: 'inline-source-map',
   module: {

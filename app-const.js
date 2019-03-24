@@ -17,15 +17,15 @@ export const category = [
     'Travel',
     'Game Play',
     'Comedy',
-    'Entertainment',
+    // 'Entertainment',
     'Howto',
     'Education',
     'Science',
     'Technology',
     'Ted',
-    'Movies',
+    // 'Movies',
     'Anime',
-    'Foreign',
+    // 'Foreign',
     'Culture',
     'TalkShow',
     'Interview',
@@ -33,5 +33,8 @@ export const category = [
     'Documentary',
     'Histoty',
     'business',
-    'PBS News'
+    'PBS News',
+    'CNBC',
+    'Rachel and Jun',
+    'ONLY in JAPAN'
 ]

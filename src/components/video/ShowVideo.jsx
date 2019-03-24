@@ -1,15 +1,10 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { StyleSheet, css } from 'aphrodite';
-import YouTube from 'react-youtube';
 import shouldPureComponentUpdate from 'react-pure-render/function';
-import { firebaseApp } from '../../../config.js';
 import moment from 'moment';
 import Card from '@material-ui/core/Card';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
-import { getVideoInfo } from '../../api/YoutubeAPI';
-import { registerViewHistory } from '../../api/FirebaseAPI';
 
 export default class ShowVideo extends Component {
   shouldComponentUpdate = shouldPureComponentUpdate;
@@ -54,7 +49,6 @@ export default class ShowVideo extends Component {
     );
   }
 }
-//bookmark_border
 const styles = StyleSheet.create({
   videoInfoCard: {
     position: 'relative',

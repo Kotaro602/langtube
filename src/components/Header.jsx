@@ -33,6 +33,7 @@ class Header extends Component {
     this.inputOnFocus = this.inputOnFocus.bind(this);
   }
 
+  //TODO: ホーム画面からリロードできない問題
   componentDidMount() {
     document.getElementById('searchBox').addEventListener('keyup', event => {
       if (event.key === 'Enter') {
@@ -77,6 +78,7 @@ class Header extends Component {
     const placeholderText = windowWidth > 800 ? 'Search video with subtitle' : 'Search video';
     const open = Boolean(this.state.anchorEl);
 
+    //TODO: スマホの検索が狭いので直す
     return (
       <div>
         <AppBar position="static" color="primary" className={css(styles.appBar)}>
@@ -167,11 +169,13 @@ const styles = StyleSheet.create({
   title: {
     position: 'absolute',
     color: 'white',
-    top: 9,
     '@media (min-width: 800px)': {
+      top: 9,
       left: 80
     },
     '@media (max-width: 800px)': {
+      fontSize: 17,
+      top: 12,
       left: 15
     }
   },
@@ -213,8 +217,6 @@ const styles = StyleSheet.create({
   searchInput: {
     position: 'absolute',
     top: 1,
-    left: 55,
-    width: 330,
     color: 'white',
     '@media (min-width: 800px)': {
       left: 55,
@@ -222,7 +224,7 @@ const styles = StyleSheet.create({
     },
     '@media (max-width: 800px)': {
       left: 40,
-      width: 220
+      width: 200
     }
   },
   accountBox: {

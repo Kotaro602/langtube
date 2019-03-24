@@ -1,0 +1,66 @@
+[debug] [2019-03-24T18:49:04.644Z] ----------------------------------------------------------------------
+[debug] [2019-03-24T18:49:04.646Z] Command:       /Users/kotaro/.nodebrew/node/v10.3.0/bin/node /Users/kotaro/.nodebrew/current/bin/firebase deploy
+[debug] [2019-03-24T18:49:04.647Z] CLI Version:   6.5.0
+[debug] [2019-03-24T18:49:04.647Z] Platform:      darwin
+[debug] [2019-03-24T18:49:04.647Z] Node Version:  v10.3.0
+[debug] [2019-03-24T18:49:04.647Z] Time:          Mon Mar 25 2019 03:49:04 GMT+0900 (JST)
+[debug] [2019-03-24T18:49:04.647Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-03-24T18:49:04.687Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-03-24T18:49:04.687Z] > authorizing via signed-in user
+[debug] [2019-03-24T18:49:04.687Z] [iam] checking project langtube-21570 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2019-03-24T18:49:04.688Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2019-03-24T18:49:04.689Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2019-03-24T18:49:04.911Z] <<< HTTP RESPONSE 200
+[debug] [2019-03-24T18:49:05.085Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/langtube-21570:testIamPermissions  
+
+[debug] [2019-03-24T18:49:05.802Z] <<< HTTP RESPONSE 200
+[debug] [2019-03-24T18:49:05.803Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/langtube-21570  
+ 
+[debug] [2019-03-24T18:49:06.516Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'langtube-21570'...
+[info] 
+[info] i  deploying hosting
+[debug] [2019-03-24T18:49:06.519Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/langtube-21570/versions  
+
+[debug] [2019-03-24T18:49:07.934Z] <<< HTTP RESPONSE 200
+[info] i  hosting[langtube-21570]: beginning deploy...
+[info] i  hosting[langtube-21570]: found 8 files in public
+[debug] [2019-03-24T18:49:07.960Z] [hosting] hash cache [cHVibGlj] load error: lines is not defined
+[debug] [2019-03-24T18:49:08.977Z] [hosting] hash cache [cHVibGlj] stored for 8 files
+[debug] [2019-03-24T18:49:08.977Z] [hosting][hash queue][FINAL]
+[debug] [2019-03-24T18:49:08.978Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/langtube-21570/versions/26880f7243b16136:populateFiles  
+ <request body omitted>
+[debug] [2019-03-24T18:49:10.319Z] <<< HTTP RESPONSE 200
+[debug] [2019-03-24T18:49:10.320Z] [hosting][populate queue][FINAL]
+[debug] [2019-03-24T18:49:10.320Z] [hosting] uploads queued: 1
+[debug] [2019-03-24T18:49:13.944Z] [hosting][upload queue][FINAL]
+[info] ✔  hosting[langtube-21570]: file upload complete
+[debug] [2019-03-24T18:49:13.945Z] [hosting] deploy completed after 6010ms
+[debug] [2019-03-24T18:49:14.155Z] [
+  {
+    "config": {
+      "public": "public",
+      "ignore": [
+        "firebase.json",
+        "config.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "site": "langtube-21570"
+    },
+    "site": "langtube-21570",
+    "version": "sites/langtube-21570/versions/26880f7243b16136"
+  }
+]
+[info] i  hosting[langtube-21570]: finalizing version...
+[debug] [2019-03-24T18:49:14.156Z] >>> HTTP REQUEST PATCH https://firebasehosting.googleapis.com/v1beta1/sites/langtube-21570/versions/26880f7243b16136?updateMask=status  
+

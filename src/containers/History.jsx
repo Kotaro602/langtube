@@ -32,5 +32,4 @@ class History extends Component {
   }
 }
 
-//TODO: componentを使ってみる
 export default withRoot(withWidth()(History));

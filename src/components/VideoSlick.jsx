@@ -44,14 +44,14 @@ class VideoSlick extends Component {
 
   render() {
     const { windowWidth, recommendList } = this.props;
-
+    console.log('aaa');
     let recList;
     if (!recommendList.items) {
       recList = null;
     } else if (windowWidth > 800) {
-      recList = shuffle(recommendList.items);
+      recList = recommendList.items;
     } else {
-      recList = shuffle(recommendList.items).slice(0, 7);
+      recList = recommendList.items.slice(0, 7);
     }
 
     return (
@@ -115,7 +115,6 @@ class VideoSlick extends Component {
   }
 }
 
-//TODO: componentを使ってみる
 export default withRoot(windowSize(VideoSlick));
 
 function PrevArrow(props) {
@@ -156,7 +155,8 @@ const pcStyles = StyleSheet.create({
     marginTop: 20
   },
   boxTitle: {
-    margin: '0px 0px 10px 10px'
+    margin: '0px 0px 10px 10px',
+    fontSize: 18
   },
   box: {
     textAlign: 'left',
@@ -184,18 +184,18 @@ const pcStyles = StyleSheet.create({
     WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 2,
     fontWeight: 'bold',
-    fontSize: '12px',
+    fontSize: '14px',
     overflow: 'hidden',
     wordWrap: 'nowrap',
     marginTop: 0,
     marginBottom: 0,
-    height: 35
+    height: 37
   },
   channelTitle: {
-    fontSize: '10px'
+    fontSize: '12px'
   },
   publishedAt: {
-    fontSize: '10px'
+    fontSize: '12px'
   },
   arrowBox: {
     position: 'absolute',
@@ -220,10 +220,11 @@ const pcStyles = StyleSheet.create({
 const spStyles = StyleSheet.create({
   sliderBox: {
     padding: '0px 10px',
-    margin: '20px 0px'
+    margin: '10px 0px 20px'
   },
   boxTitle: {
-    margin: '10px 0px'
+    margin: '10px 0px',
+    fontSize: 20
   },
   box: {
     margin: '13px 0px'
@@ -246,16 +247,16 @@ const spStyles = StyleSheet.create({
     WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 2,
     fontWeight: 'bold',
-    fontSize: '12px',
+    fontSize: '14px',
     overflow: 'hidden',
     wordWrap: 'nowrap',
     marginTop: 0,
     marginBottom: 0
   },
   channelTitle: {
-    fontSize: '10px'
+    fontSize: '12px'
   },
   publishedAt: {
-    fontSize: '10px'
+    fontSize: '12px'
   }
 });

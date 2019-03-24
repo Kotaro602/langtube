@@ -47,26 +47,27 @@ export function getSearchWordsArray(targetWord, dictionary) {
             searchWordArray.push(word.slice(0, -4) + 'y');
         }
     }
-    //console.log(searchWordArray)
 
     //検索実行
     const searchResult = dictionary.filter(wordObj => {
         return searchWordArray.indexOf(wordObj.k) !== -1;
     });
 
-    //完全一致したワードが先頭に来るように配列を入れ替える
-    // TODO: 元のワードに一致したやつが必ず来ないので直す
-    searchWordArray.forEach(word => {
-
-        const matchIndex = searchResult.findIndex(obj => {
-            return obj.t === word
-        });
-
+    //各検索ワードに完全一致したやつは上部に来るように配列を入れ替える（部分一致は下部に行く）
+    searchWordArray.forEach(resultWord => {
+        const matchIndex = searchResult.findIndex(obj => obj.t === resultWord);
         if (matchIndex !== -1) {
             searchResult.unshift(searchResult[matchIndex]);
             searchResult.splice(matchIndex + 1, 1);
         }
     })
+
+    // 元のワードに完全一致したやつは一番上に表示する
+    const matchIndex = searchResult.findIndex(obj => obj.t === word);
+    if (matchIndex !== -1) {
+        searchResult.unshift(searchResult[matchIndex]);
+        searchResult.splice(matchIndex + 1, 1);
+    }
 
     return searchResult;
 }

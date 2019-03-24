@@ -55,10 +55,12 @@ class Subtitle extends Component {
       subtitleLang,
       subtitleList,
       currentTextNo,
-      textHover,
+      wordDisp,
       textClear,
       getVideoData
     } = this.props;
+
+    const pcMode = windowWidth > 1050;
 
     let textArray = [];
     if (subtitle) {
@@ -67,28 +69,35 @@ class Subtitle extends Component {
         const text = item.elements ? decode(item.elements[0].text).replace(/(\n|\r)/g, ' ') : '';
         const colorStyle = css(currentTextNo == i && styles.textColor);
 
-        textArray.push(
+        const node = pcMode ? (
           <a key={i} id={i} start={start} className={colorStyle} onClick={seekToYoutube}>
             {text.split(' ').map((word, j) => (
-              <span key={j} onMouseOver={textHover} onMouseOut={textClear}>
+              <span key={j} onMouseOver={wordDisp} onMouseOut={textClear}>
+                {' ' + word}
+              </span>
+            ))}
+          </a>
+        ) : (
+          <a key={i} id={i} start={start} className={colorStyle}>
+            {text.split(' ').map((word, j) => (
+              <span key={j} onClick={wordDisp}>
                 {' ' + word}
               </span>
             ))}
           </a>
         );
+        textArray.push(node);
       });
     }
     return (
-      <div className={css(styles.subtitleBox)}>
-        <Card id="subtitle" className={css(styles.textBox)}>
-          <CardContent>
-            <div style={{ margin: '10px' }}>
-              <FadeLoader sizeUnit={'px'} size={150} color={'#123abc'} loading={this.state.loading} />
-              <div className={css(styles.text)}>{textArray}</div>
-            </div>
+      <div>
+        <Card id="subtitle" className={css(styles.card)}>
+          <CardContent className={css(styles.cardBox)}>
+            <FadeLoader sizeUnit={'px'} size={150} color={'#123abc'} loading={this.state.loading} />
+            <div className={css(styles.text)}>{textArray}</div>
           </CardContent>
         </Card>
-        {windowWidth > 1050 && (
+        {pcMode && (
           <div className={css(styles.configBox)}>
             <FormControl className={css(styles.formControl)}>
               <Select value={subtitleLang} onChange={getVideoData} className={css(styles.formSelect)}>
@@ -118,45 +127,47 @@ class Subtitle extends Component {
     );
   }
 }
-
 export default windowSize(Subtitle);
 
 const styles = StyleSheet.create({
-  subtitleBox: {
+  card: {
     position: 'relative',
-    '@media (min-width: 800px)': {
-      height: 'calc(100vh - 180px)'
-    },
-    '@media (max-width: 800px)': {
-      height: 'calc(100vh - calc(100vw * 9 / 16))'
-    }
-  },
-  textBox: {
-    // position: 'absolute',
-    // top: 0,
-    // left: 0,
-    // width: '100%',
-    // height: '100%',
-    position: 'relative',
-    '@media (min-width: 800px)': {
-      height: 'calc(100vh - 180px)'
-    },
-    '@media (max-width: 800px)': {
-      height: 'calc(100vh - calc(100vw * 9 / 16))'
-    },
     textAlign: 'left',
     overflow: 'auto',
     controls: 0,
     WebkitOverflowScrolling: 'touch',
-    overflowScrolling: 'touch'
+    overflowScrolling: 'touch',
+    '@media (min-width: 1050px)': {
+      height: 'calc(100vh - 180px)'
+    },
+    '@media (max-width: 1050px)': {
+      height: 'calc(100vh - calc(100vw * 9 / 16))'
+    }
+  },
+  cardBox: {
+    '@media (max-width: 1050px)': {
+      padding: '0px 0px 16px 0px',
+      margin: 10
+    }
+  },
+  blankArea: {
+    position: 'absolute',
+    width: '100%',
+    top: 'calc(50px + 100vw * 9 / 16)',
+    left: 0,
+    height: 10,
+    backgroundColor: 'white'
   },
   text: {
     fontFamily: 'system-ui',
-    lineHeight: '1.6',
-    fontSize: '20px'
-    // [theme.breakpoints.down('sm')]: {
-    //   fontSize: '16px'
-    // }
+    '@media (min-width: 1050px)': {
+      lineHeight: '1.6',
+      fontSize: '20px'
+    },
+    '@media (max-width: 1050px)': {
+      lineHeight: '1.6',
+      fontSize: '17px'
+    }
   },
   textColor: {
     backgroundColor: 'yellow !important'

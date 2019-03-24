@@ -22,6 +22,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
+    console.log('bbb');
     const shaffleList = shuffle(category);
     Promise.all([
       getSearchResult(shaffleList.slice(0, 1)[0], 48),
@@ -63,7 +64,6 @@ class Home extends Component {
   }
 }
 
-//TODO: componentを使ってみる
 export default withRoot(windowSize(Home));
 
 const styles = StyleSheet.create({

@@ -38,5 +38,4 @@ class Search extends Component {
   }
 }
 
-//TODO: componentを使ってみる
 export default withRoot(withWidth()(Search));

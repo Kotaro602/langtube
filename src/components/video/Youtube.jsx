@@ -20,14 +20,10 @@ class Youtube extends Component {
     this.state = {
       positionFixed: false
     };
-    this.navPos = null;
   }
 
   componentDidMount() {
-    if (this.props.windowWidth < 1050) {
-      window.addEventListener('scroll', this.handleScroll);
-      this.setState({ positionFixed: true });
-    } else {
+    if (this.props.windowWidth > 1050) {
       document.getElementById('youtubeVideoBox').addEventListener('mouseover', function() {
         window.focus();
       });
@@ -41,57 +37,66 @@ class Youtube extends Component {
     window.removeEventListener('scroll', this.handleScroll);
   }
 
-  handleScroll = () => {
-    console.log(window.scrollY);
-    // if (!this.state.positionFixed && window.scrollY >= 50) {
-    //   this.setState({ positionFixed: true });
-    // } else if (this.state.positionFixed && window.scrollY < 50) {
-    //   this.setState({ positionFixed: false });
-    // }
-  };
-
   render() {
-    const { windowWidth, videoId, onReady, stateChange, onPlaybackRateChange } = this.props;
+    const {
+      windowWidth,
+      videoId,
+      onReady,
+      stateChange,
+      playStateChange,
+      timeBack,
+      timeForword,
+      sliderDispFlg
+    } = this.props;
+
+    const controls = windowWidth > 1050 ? '2' : '0';
     const opts = {
       playerVars: {
         autoplay: 0,
-        controls: 2,
+        controls: controls,
         playsinline: 1,
         rel: 0,
-        disablekb: 1
+        disablekb: 1,
+        modestbranding: 1
       }
     };
-    console.log(this.state.positionFixed);
+
     return (
-      <div>
-        {/* <div className={css(this.state.positionFixed && styles.fixBox)}> */}
-        <div className={css(styles.youtubeBox)} id="youtubeVideoBox">
-          <YouTube
-            videoId={videoId}
-            opts={opts}
-            className={css(styles.youtubeStyle)}
-            onReady={onReady}
-            onStateChange={stateChange}
-            onPlaybackRateChange={onPlaybackRateChange}
-          />
-        </div>
-        {/* </div> */}
-        {/* <div className={css(this.state.positionFixed && styles.marginBox)} /> */}
+      <div className={css(styles.youtubeBox)} id="youtubeVideoBox">
+        <YouTube
+          videoId={videoId}
+          opts={opts}
+          className={css(styles.youtubeStyle)}
+          onReady={onReady}
+          onStateChange={stateChange}
+        />
+        {windowWidth < 1050 && (
+          <div>
+            <div className={css(styles.backArea, !sliderDispFlg && styles.add)} onClick={timeBack} />
+            <div className={css(styles.playArea, !sliderDispFlg && styles.add)} onClick={playStateChange} />
+            <div className={css(styles.forwardArea, !sliderDispFlg && styles.add)} onClick={timeForword} />
+            {sliderDispFlg && (
+              <div>
+                <Icon color="action" fontSize="large" className={css(styles.BackIcon)}>
+                  fast_rewind
+                </Icon>
+                <Icon color="action" fontSize="large" className={css(styles.PlayIcon)}>
+                  play_circle_outline
+                </Icon>
+                <Icon color="action" fontSize="large" className={css(styles.ForwardIcon)}>
+                  fast_forward
+                </Icon>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   }
 }
-
 export default windowSize(Youtube);
 
-//bookmark_border
 const styles = StyleSheet.create({
-  fixBox: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%'
-  },
   youtubeBox: {
     position: 'relative',
     paddingBottom: '56.25%'
@@ -103,7 +108,49 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%'
   },
-  marginBox: {
-    marginTop: 'calc(100vw * 9 / 16)'
+  backArea: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: 'calc(100% - 50px)',
+    width: '28%',
+    zIndex: 999
+  },
+  playArea: {
+    position: 'absolute',
+    top: 0,
+    left: '28%',
+    height: 'calc(100% - 50px)',
+    width: '46%',
+    zIndex: 999
+  },
+  forwardArea: {
+    position: 'absolute',
+    top: 0,
+    left: '72%',
+    height: 'calc(100% - 50px)',
+    width: '28%',
+    zIndex: 999
+  },
+  add: {
+    height: '100% !important'
+  },
+  BackIcon: {
+    position: 'absolute',
+    zIndex: 998,
+    top: '40%',
+    left: '10%'
+  },
+  PlayIcon: {
+    position: 'absolute',
+    zIndex: 998,
+    top: '40%',
+    left: '45%'
+  },
+  ForwardIcon: {
+    position: 'absolute',
+    zIndex: 998,
+    top: '40%',
+    right: '10%'
   }
 });

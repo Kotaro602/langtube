@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import windowSize from 'react-window-size';
+import { getUserLocale } from 'get-user-locale';
+import ReactQueryParams from 'react-query-params';
+import withRoot from '../withRoot';
+import Hidden from '@material-ui/core/Hidden';
+import Grid from '@material-ui/core/Grid';
 import ShowVideo from '../components/video/ShowVideo';
 import RelatedVideo from '../components/video/RelatedVideo';
 import Youtube from '../components/video/Youtube';
 import Subtitle from '../components/video/Subtitle';
 import Dictionary from '../components/video/Dictionary';
+import TimeSlider from '../components/video/TimeSlider';
+import FooterButtons from '../components/video/FooterButtons';
 import { getVideoInfo, getSubtitle } from '../api/YoutubeAPI';
 import { registerViewHistory } from '../api/FirebaseAPI';
 import { firebaseApp } from '../../config.js';
-import windowSize from 'react-window-size';
-import ReactQueryParams from 'react-query-params';
-import withRoot from '../withRoot';
-import Hidden from '@material-ui/core/Hidden';
-import Grid from '@material-ui/core/Grid';
 
 class Watch extends ReactQueryParams {
   constructor(props) {
@@ -20,6 +22,8 @@ class Watch extends ReactQueryParams {
     this.state = {
       videoId: null,
       videoInfo: null,
+      sliderDispFlg: false,
+      currentTime: null,
       searchWord: null,
       relatedVideoList: null,
       subtitle: [],
@@ -33,12 +37,11 @@ class Watch extends ReactQueryParams {
     this.onReady = this.onReady.bind(this);
     this.seekToYoutube = this.seekToYoutube.bind(this);
     this.stateChange = this.stateChange.bind(this);
-    this.textHover = this.textHover.bind(this);
-    this.textOut = this.textOut.bind(this);
     this.getVideoData = this.getVideoData.bind(this);
   }
 
   componentDidMount() {
+    //字幕ハイライトの更新
     setInterval(() => {
       const player = this.player;
       if (
@@ -96,6 +99,10 @@ class Watch extends ReactQueryParams {
     this.getVideoData(undefined, this.state.subtitleLang, nextProps);
   }
 
+  componentWillUnmount() {
+    clearInterval();
+  }
+
   getVideoData(event, changedLang, props) {
     //TODO: 暇があったら見直す
     const videoId = this.queryParams.videoId;
@@ -127,15 +134,23 @@ class Watch extends ReactQueryParams {
 
   onReady(event) {
     this.player = event.target;
+    this.setState({ currentTime: this.player.getCurrentTime() });
   }
   stateChange(event) {
+    //停止時にSliderを表示
+    if (event.data === YT.PlayerState.PAUSED) {
+      this.setState({ sliderDispFlg: true });
+    }
+
+    // 字幕の表示位置が変わった場合を検知する
     if (event.data === YT.PlayerState.BUFFERING || event.data === YT.PlayerState.PLAYING) {
       const currentTime = this.player.getCurrentTime();
       const targetIndex = this.state.currentTimeArray.findIndex(item => item > currentTime);
       if (targetIndex !== 0) {
-        this.setState({ currentTextNo: Number(targetIndex - 1) });
+        this.setState({ currentTextNo: Number(targetIndex - 1), sliderDispFlg: false });
       }
     }
+    //TODO: ipadの大きさの画面でポーズ中にレコメンドビデオが押せなくなる。暇なら直す。
   }
   seekToYoutube(event) {
     const element = event.target.parentNode;
@@ -146,18 +161,34 @@ class Watch extends ReactQueryParams {
       currentTextNo: Number(element.getAttribute('id'))
     });
   }
-  textHover(event) {
+  sliderChange = values => {
+    this.player.seekTo(values[0]);
+    this.setState({ currentTime: values[0] });
+  };
+  playStateChange = () => {
+    const yp = this.player;
+    yp.getPlayerState() === YT.PlayerState.PLAYING ? yp.pauseVideo() : yp.playVideo();
+  };
+  timeBack = () => {
+    this.player.seekTo(this.player.getCurrentTime() - 3);
+    this.setState({ currentTime: this.player.getCurrentTime() });
+  };
+  timeForword = () => {
+    this.player.seekTo(this.player.getCurrentTime() + 3);
+    this.setState({ currentTime: this.player.getCurrentTime() });
+  };
+  wordDisp = event => {
     this.setState({
       searchWord: event.target.textContent
     });
-  }
-  textOut(event) {
+  };
+  textClear = () => {
+    console.log('clear');
     this.setState({ searchWord: null });
-  }
+  };
 
   render() {
     const { windowWidth } = this.props;
-
     return (
       <div>
         {/* PC */}
@@ -168,14 +199,9 @@ class Watch extends ReactQueryParams {
             </Hidden>
             <Grid item xs={12} md={6} lg={5}>
               <div>
-                <Youtube
-                  videoId={this.state.videoId}
-                  onReady={this.onReady}
-                  stateChange={this.stateChange}
-                  onPlaybackRateChange={this.onPlaybackRateChange}
-                />
-                <ShowVideo videoInfo={this.state.videoInfo} />
+                <Youtube videoId={this.state.videoId} onReady={this.onReady} stateChange={this.stateChange} />
                 <Dictionary searchWord={this.state.searchWord} />
+                <ShowVideo videoInfo={this.state.videoInfo} />
                 <RelatedVideo videoInfo={this.state.videoInfo} />
               </div>
             </Grid>
@@ -186,8 +212,8 @@ class Watch extends ReactQueryParams {
                 subtitleLang={this.state.subtitleLang}
                 subtitleList={this.state.subtitleList}
                 seekToYoutube={this.seekToYoutube}
-                textHover={this.textHover}
-                textClear={this.textOut}
+                wordDisp={this.wordDisp}
+                textClear={this.textClear}
                 getVideoData={this.getVideoData}
               />
             </Grid>
@@ -199,22 +225,35 @@ class Watch extends ReactQueryParams {
         {/* SP */}
         {windowWidth < 960 && (
           <div>
+            <Dictionary searchWord={this.state.searchWord} textClear={this.textClear} />
             <Youtube
               videoId={this.state.videoId}
               onReady={this.onReady}
               stateChange={this.stateChange}
-              onPlaybackRateChange={this.onPlaybackRateChange}
+              playStateChange={this.playStateChange}
+              timeBack={this.timeBack}
+              timeForword={this.timeForword}
+              sliderDispFlg={this.state.sliderDispFlg}
             />
+            {this.state.sliderDispFlg && (
+              <TimeSlider
+                sliderChange={this.sliderChange}
+                videoDuration={this.state.videoDuration}
+                currentTime={this.state.currentTime}
+                player={this.player}
+              />
+            )}
             <Subtitle
               currentTextNo={this.state.currentTextNo}
               subtitle={this.state.subtitle}
               subtitleLang={this.state.subtitleLang}
               subtitleList={this.state.subtitleList}
               seekToYoutube={this.seekToYoutube}
-              textHover={this.textHover}
-              textClear={this.textOut}
+              wordDisp={this.wordDisp}
+              textClear={this.textClear}
               getVideoData={this.getVideoData}
             />
+            <FooterButtons />
           </div>
         )}
       </div>
@@ -222,5 +261,4 @@ class Watch extends ReactQueryParams {
   }
 }
 
-//TODO: componentを使ってみる
 export default withRoot(windowSize(Watch));

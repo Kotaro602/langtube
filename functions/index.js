@@ -20,10 +20,10 @@ app.get('/api/getsubtitleurl', function (req, res) {
         })
 })
 
-// app.get('*', (req, res) => {
-//     console.log(req.url)
-//     res.sendFile(path.resolve(__dirname + '/../public/index.html'));
-// });
+app.get('*', (req, res) => {
+    console.log(req.url)
+    res.sendFile(path.resolve(__dirname + '/../public/index.html'));
+});
 
 var server = app.listen(8081, function () {
     var host = server.address().address
