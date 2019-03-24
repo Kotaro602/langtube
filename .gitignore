@@ -1,8 +1,7 @@
-/.firebase/
-/.history/
+/.firebase
+/.history
 /.vscode/
 /node_modules/
-/idea.md
 /config.js
 /package-lock.json
-
+/firebase-debug.log
