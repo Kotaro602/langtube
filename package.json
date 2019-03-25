@@ -37,6 +37,7 @@
     "react-compound-slider": "^1.2.1",
     "react-dom": "^16.5.2",
     "react-draggable": "^3.0.5",
+    "react-ga": "^2.5.7",
     "react-input-slider": "^5.0.5",
     "react-loading": "^2.0.3",
     "react-pure-render": "^1.0.2",

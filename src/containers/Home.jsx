@@ -22,7 +22,6 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    console.log('bbb');
     const shaffleList = shuffle(category);
     Promise.all([
       getSearchResult(shaffleList.slice(0, 1)[0], 48),
@@ -34,8 +33,7 @@ class Home extends Component {
   }
 
   render() {
-    const { windowWidth } = this.props;
-    console.log(windowWidth);
+    const { windowWidth } = this.props;   
     const recommendLists = this.state.recommendList;
     return (
       <div>

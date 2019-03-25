@@ -1,16 +1,23 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { firebaseApp } from '../config.js';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Router, Route, Switch } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
+import ReactGA from 'react-ga';
 import ReactQueryParams from 'react-query-params';
-
 import Home from './containers/Home';
 import Watch from './containers/Watch';
 import Search from './containers/Search';
 import History from './containers/History';
 import Header from './components/Header';
-import LoginModal from './components/LoginModal';
-import { ReadViewHisoty } from './api/FirebaseAPI';
+import { firebaseApp, gaTrackingCode } from '../config.js';
+
+ReactGA.initialize(gaTrackingCode);
+const history = createBrowserHistory();
+history.listen((location) => {
+  console.log(location.pathname)
+  ReactGA.set({ page: location.pathname });
+  ReactGA.pageview(location.pathname);
+});
 
 const NotFound = () => {
   return <h2>Not Found</h2>;
@@ -26,6 +33,9 @@ class App extends ReactQueryParams {
   }
 
   componentDidMount() {
+
+    console.log()
+
     firebaseApp.auth().onAuthStateChanged(user => {
       if (user) {
         this.setState({ loading: false, user: user });
@@ -37,7 +47,7 @@ class App extends ReactQueryParams {
 
   render() {
     return (
-      <Router>
+      <Router history={history}>
         {this.state.loading ? (
           <div>loading...</div>
         ) : (
