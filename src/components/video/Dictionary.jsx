@@ -33,12 +33,12 @@ class Dictionary extends Component {
   }
 
   render() {
-    const { windowWidth, searchWord, textClear } = this.props;
+    const { windowWidth, searchWord, textClear, subtitleLang } = this.props;
     const searchResult = getSearchWordsArray(searchWord, this.dictionary);
 
     return (
       <div>
-        {searchWord && (
+        {subtitleLang === 'en' && searchWord && (
           <div className={css(styles.parentBox)} onClick={textClear}>
             <div className={css(styles.box)}>
               {searchResult &&

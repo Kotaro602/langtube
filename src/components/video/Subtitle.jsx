@@ -20,7 +20,7 @@ class Subtitle extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: true,
+      loading: false,
       textScroll: true
     };
     this.changeTextScroll = this.changeTextScroll.bind(this);
@@ -39,9 +39,9 @@ class Subtitle extends Component {
     }, 50);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.subtitleList) this.setState({ loading: false });
-  }
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.subtitle) this.setState({ loading: false });
+  // }
 
   changeTextScroll() {
     this.setState({ textScroll: !this.state.textScroll });
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     },
     '@media (max-width: 1050px)': {
       lineHeight: '1.6',
-      fontSize: '17px'
+      fontSize: '16px'
     }
   },
   textColor: {

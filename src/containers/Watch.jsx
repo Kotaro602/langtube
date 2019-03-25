@@ -30,7 +30,8 @@ class Watch extends ReactQueryParams {
       subtitleLang: 'en',
       subtitleList: [],
       currentTimeArray: [],
-      currentTextNo: 0
+      currentTextNo: 0,
+      showInfoForSpFlg: false
     };
 
     this.player = null;
@@ -106,7 +107,12 @@ class Watch extends ReactQueryParams {
   getVideoData(event, changedLang, props) {
     //TODO: 暇があったら見直す
     const videoId = this.queryParams.videoId;
-    const lang = event ? event.target.value : changedLang;
+    let lang;
+    if (event) {
+      lang = event.target.value ? event.target.value : event.target.getAttribute('value');
+    } else {
+      lang = changedLang;
+    }
 
     getVideoInfo(videoId).then(res => {
       const videoInfoData = res.items[0];
@@ -183,10 +189,12 @@ class Watch extends ReactQueryParams {
     });
   };
   textClear = () => {
-    console.log('clear');
     this.setState({ searchWord: null });
   };
-
+  ChgShowInfoFlg = () => {
+    console.log('call');
+    this.setState({ showInfoForSpFlg: !this.state.showInfoForSpFlg });
+  };
   render() {
     const { windowWidth } = this.props;
     return (
@@ -200,7 +208,7 @@ class Watch extends ReactQueryParams {
             <Grid item xs={12} md={6} lg={5}>
               <div>
                 <Youtube videoId={this.state.videoId} onReady={this.onReady} stateChange={this.stateChange} />
-                <Dictionary searchWord={this.state.searchWord} />
+                <Dictionary searchWord={this.state.searchWord} subtitleLang={this.state.subtitleLang} />
                 <ShowVideo videoInfo={this.state.videoInfo} />
                 <RelatedVideo videoInfo={this.state.videoInfo} />
               </div>
@@ -225,7 +233,11 @@ class Watch extends ReactQueryParams {
         {/* SP */}
         {windowWidth < 960 && (
           <div>
-            <Dictionary searchWord={this.state.searchWord} textClear={this.textClear} />
+            <Dictionary
+              searchWord={this.state.searchWord}
+              textClear={this.textClear}
+              subtitleLang={this.state.subtitleLang}
+            />
             <Youtube
               videoId={this.state.videoId}
               onReady={this.onReady}
@@ -243,17 +255,23 @@ class Watch extends ReactQueryParams {
                 player={this.player}
               />
             )}
-            <Subtitle
-              currentTextNo={this.state.currentTextNo}
-              subtitle={this.state.subtitle}
-              subtitleLang={this.state.subtitleLang}
-              subtitleList={this.state.subtitleList}
-              seekToYoutube={this.seekToYoutube}
-              wordDisp={this.wordDisp}
-              textClear={this.textClear}
+            {!this.state.showInfoForSpFlg && (
+              <Subtitle
+                currentTextNo={this.state.currentTextNo}
+                subtitle={this.state.subtitle}
+                seekToYoutube={this.seekToYoutube}
+                wordDisp={this.wordDisp}
+                textClear={this.textClear}
+              />
+            )}
+            {this.state.showInfoForSpFlg && <ShowVideo videoInfo={this.state.videoInfo} />}
+            <FooterButtons
               getVideoData={this.getVideoData}
+              subtitleList={this.state.subtitleList}
+              subtitleLang={this.state.subtitleLang}
+              showInfoForSpFlg={this.state.showInfoForSpFlg}
+              ChgShowInfoFlg={this.ChgShowInfoFlg}
             />
-            <FooterButtons />
           </div>
         )}
       </div>

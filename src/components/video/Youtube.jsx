@@ -138,19 +138,26 @@ const styles = StyleSheet.create({
   BackIcon: {
     position: 'absolute',
     zIndex: 998,
-    top: '40%',
-    left: '10%'
+    top: '35%',
+    left: '5%',
+    width: 70,
+    fontSize: 50
   },
   PlayIcon: {
     position: 'absolute',
     zIndex: 998,
-    top: '40%',
-    left: '45%'
+    top: '30%',
+    left: 'calc(50% - 35px)',
+    width: 90,
+    fontSize: 70
   },
   ForwardIcon: {
     position: 'absolute',
     zIndex: 998,
-    top: '40%',
-    right: '10%'
+    top: '35%',
+    right: '5%',
+    width: 70,
+    fontSize: 50,
+    textAlign: 'right'
   }
 });

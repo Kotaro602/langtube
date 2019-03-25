@@ -13,8 +13,7 @@ import { firebaseApp, gaTrackingCode } from '../config.js';
 
 ReactGA.initialize(gaTrackingCode);
 const history = createBrowserHistory();
-history.listen((location) => {
-  console.log(location.pathname)
+history.listen(location => {
   ReactGA.set({ page: location.pathname });
   ReactGA.pageview(location.pathname);
 });
@@ -33,8 +32,7 @@ class App extends ReactQueryParams {
   }
 
   componentDidMount() {
-
-    console.log()
+    console.log();
 
     firebaseApp.auth().onAuthStateChanged(user => {
       if (user) {
