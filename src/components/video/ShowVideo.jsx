@@ -34,7 +34,7 @@ export default class ShowVideo extends Component {
               </p>
             </div>
             <div className={css(styles.iconBox)}>
-              <IconButton style={{ color: 'red' }} aria-label="Delete" color="inherit" label="test">
+              <IconButton style={{ color: 'white' }} aria-label="Delete" color="inherit" label="test">
                 <Icon className={css(styles.bookmarkIcon)}>bookmark</Icon>
               </IconButton>
               <a className={css(styles.bookmarkText)}>bookmark</a>
