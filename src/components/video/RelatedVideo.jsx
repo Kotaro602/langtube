@@ -4,32 +4,36 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { StyleSheet, css } from 'aphrodite';
 import shouldPureComponentUpdate from 'react-pure-render/function';
+import windowSize from 'react-window-size';
+import shuffle from 'shuffle-array';
 import { Link } from 'react-router-dom';
+import { getSearchResult } from '../../api/YoutubeAPI';
+import List from '../List';
 
-import { getRelatedVideo } from '../../api/YoutubeAPI';
-
-export default class RelatedVideo extends Component {
-  shouldComponentUpdate = shouldPureComponentUpdate;
-
+class RelatedVideo extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      relatedVideoList: null
-    };
     this.sliderFlg = false;
 
     this.beforeChangeSlider = this.beforeChangeSlider.bind(this);
     this.afterChangeSlider = this.afterChangeSlider.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    //TODO: 親で呼ぶように変更する、親のcomponentDidMountで取得した後だから、こちらのDidMountでは取得できない
-    if (this.state.relatedVideoList === null && nextProps.videoInfo) {
-      getRelatedVideo(nextProps.videoInfo.snippet.categoryId, 50).then(json =>
-        this.setState({ relatedVideoList: json })
-      );
-    }
-  }
+  //shouldComponentUpdate(nextProps, nextState) {
+  // console.log(nextProps);
+  // console.log(this.props);
+  // console.log(nextState);
+  // console.log(this.state);
+  // console.log(
+  //   this.state.relatedVideoList === nextState.relatedVideoList &&
+  //     this.props.videoInfo === nextProps.videoInfo
+  // );
+  // console.log('-------------');
+  // return !(
+  //   this.state.relatedVideoList === nextState.relatedVideoList &&
+  //   this.props.videoInfo === nextProps.videoInfo
+  // );
+  //}
 
   boxOnClick(id) {
     if (!this.sliderFlg) document.location.href = `/watch/?videoId=${id}`;
@@ -44,8 +48,7 @@ export default class RelatedVideo extends Component {
   }
 
   render() {
-    const { width } = this.props;
-
+    const { windowWidth, result } = this.props;
     var settings = {
       lazyLoad: true,
       arrows: true,
@@ -80,11 +83,11 @@ export default class RelatedVideo extends Component {
     return (
       <div className={css(styles.sliderBox)}>
         <Slider {...settings}>
-          {this.state.relatedVideoList &&
-            this.state.relatedVideoList.items.map((item, i) => {
+          {result &&
+            result.items.map((item, i) => {
               return (
                 <div key={i} className={css(styles.box)}>
-                  <Link to={`/watch/?videoId=${item.id.videoId}`}>
+                  <Link to={`/watch/?videoId=${item.id.videoId}`} className={css(styles.link)}>
                     <img src={item.snippet.thumbnails.medium.url} className={css(styles.image)} />
                     <div className={css(styles.titleBox)}>
                       <p className={css(styles.title)}>{item.snippet.title}</p>
@@ -98,6 +101,7 @@ export default class RelatedVideo extends Component {
     );
   }
 }
+export default windowSize(RelatedVideo);
 
 function PrevArrow(props) {
   const { className, style, onClick } = props;
@@ -131,18 +135,16 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     cursor: 'pointer',
     marginLeft: 'calc(calc(100% - 145px)/2)',
-    // '@media (max-width: 3000)': {
-    //   marginLeft: 15
-    // },
-    // '@media (max-width: 1930)': {
-    //   marginLeft: 100
-    // },
     ':focus': {
       outline: 'none'
     }
   },
   image: {
     width: 145
+  },
+  link: {
+    textDecoration: 'none',
+    color: 'black'
   },
   titleBox: {
     width: 145,

@@ -1,34 +1,30 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import shouldPureComponentUpdate from 'react-pure-render/function';
 import { StyleSheet, css } from 'aphrodite';
 import windowSize from 'react-window-size';
 import { Link } from 'react-router-dom';
-import { getSearchResult } from '../api/YoutubeAPI';
-import queryString from 'query-string';
-import withRoot from '../withRoot';
-import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
-import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import { imageUrl } from '../../app-const';
 
 class List extends Component {
-  shouldComponentUpdate = shouldPureComponentUpdate;
-
   constructor(props) {
     super(props);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.props.result !== nextProps.result;
+  }
+
   render() {
     const { windowWidth, result } = this.props;
+    console.log(result);
     return (
-      <div style={{}}>
+      <div>
         <Card className={css(styles.listCard)}>
           {result &&
             result.map((item, i) => {
               return (
-                <div key={i} className={css(styles.eachBox)}>
-                  <Link to={`/watch/?videoId=${item.id.videoId}`}>
+                <Link key={i} to={`/watch/?videoId=${item.id.videoId}`}>
+                  <div className={css(styles.eachBox)}>
                     <img src={`${imageUrl}${item.id.videoId}/mqdefault.jpg`} className={css(styles.img)} />
                     <div className={css(styles.infoBox)}>
                       <p className={css(styles.title)}>{item.snippet.title}</p>
@@ -36,8 +32,8 @@ class List extends Component {
                         <p className={css(styles.description)}>{item.snippet.description}</p>
                       )}
                     </div>
-                  </Link>
-                </div>
+                  </div>
+                </Link>
               );
             })}
         </Card>
@@ -94,7 +90,10 @@ const styles = StyleSheet.create({
   },
   title: {
     margin: '0px',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    '@media (max-width: 650px)': {
+      fontSize: 14
+    }
   },
   description: {
     fontSize: 13

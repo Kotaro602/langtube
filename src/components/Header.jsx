@@ -61,7 +61,7 @@ class Header extends Component {
     this.setState({ anchorEl: event.currentTarget });
   };
   moveToBookmark = () => {
-    this.props.history.push(`/history`);
+    this.props.history.push(`/bookmark`);
     this.setState({ anchorEl: null });
   };
   moveToHistory = () => {
@@ -111,9 +111,11 @@ class Header extends Component {
               {user && (
                 <div>
                   {windowWidth > 450 && (
-                    <IconButton color="inherit" className={css(styles.accountIcon)}>
-                      <Icon>bookmarks</Icon>
-                    </IconButton>
+                    <Link to={`/bookmark`} className={css(styles.icon)}>
+                      <IconButton color="inherit" className={css(styles.accountIcon)}>
+                        <Icon>bookmarks</Icon>
+                      </IconButton>
+                    </Link>
                   )}
                   {windowWidth > 450 && (
                     <Link to={`/history`} className={css(styles.icon)}>
@@ -132,6 +134,7 @@ class Header extends Component {
                   </IconButton>
                   <Menu
                     id="menu-appbar"
+                    disableAutoFocusItem={true}
                     anchorEl={this.state.anchorEl}
                     anchorOrigin={{
                       vertical: 'top',
@@ -143,8 +146,8 @@ class Header extends Component {
                     }}
                     open={open}
                     onClose={this.handleClose}>
-                    <MenuItem onClick={this.moveToBookmark}>Bookmark</MenuItem>
-                    <MenuItem onClick={this.moveToHistory}>History</MenuItem>
+                    {windowWidth < 450 && <MenuItem onClick={this.moveToBookmark}>Bookmark</MenuItem>}
+                    {windowWidth < 450 && <MenuItem onClick={this.moveToHistory}>History</MenuItem>}
                     <MenuItem onClick={this.logout}>Logout</MenuItem>
                   </Menu>
                 </div>
@@ -186,7 +189,7 @@ const styles = StyleSheet.create({
       left: 'calc(180px + 7%)'
     },
     '@media (max-width: 800px)': {
-      left: 120
+      left: 105
     }
   },
   searchBox: {
@@ -245,6 +248,7 @@ const styles = StyleSheet.create({
     //width: 50
   },
   loginButton: {
+    top: 5,
     color: 'white'
   }
 });

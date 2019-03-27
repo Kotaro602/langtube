@@ -12,8 +12,10 @@ import Subtitle from '../components/video/Subtitle';
 import Dictionary from '../components/video/Dictionary';
 import TimeSlider from '../components/video/TimeSlider';
 import FooterButtons from '../components/video/FooterButtons';
-import { getVideoInfo, getSubtitle } from '../api/YoutubeAPI';
-import { registerViewHistory } from '../api/FirebaseAPI';
+import List from '../components/List';
+
+import { getVideoInfo, getSubtitle, getSearchResult } from '../api/YoutubeAPI';
+import { registerHistory } from '../api/FirebaseAPI';
 import { firebaseApp } from '../../config.js';
 
 class Watch extends ReactQueryParams {
@@ -40,6 +42,12 @@ class Watch extends ReactQueryParams {
     this.stateChange = this.stateChange.bind(this);
     this.getVideoData = this.getVideoData.bind(this);
   }
+
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   return (
+  //     nextProps.location.key !== this.props.location.key || nextProps.searchWord !== this.props.searchWord ||
+  //   );
+  // }
 
   componentDidMount() {
     //字幕ハイライトの更新
@@ -97,7 +105,10 @@ class Watch extends ReactQueryParams {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.getVideoData(undefined, this.state.subtitleLang, nextProps);
+    if (nextProps.location.key !== this.props.location.key) {
+      console.log('componentWillReceiveProps');
+      this.getVideoData(undefined, this.state.subtitleLang, nextProps);
+    }
   }
 
   componentWillUnmount() {
@@ -118,7 +129,7 @@ class Watch extends ReactQueryParams {
       const videoInfoData = res.items[0];
       const user = firebaseApp.auth().currentUser;
       if (user && this.state.videoId !== videoId) {
-        registerViewHistory(user, videoInfoData, props.historyList);
+        registerHistory(user, videoInfoData);
       }
 
       getSubtitle(videoId, lang).then(info => {
@@ -127,13 +138,16 @@ class Watch extends ReactQueryParams {
           currentTimeArray.push(text.attributes.start);
         });
 
-        this.setState(
-          Object.assign(info, {
-            videoId: videoId,
-            videoInfo: videoInfoData,
-            currentTimeArray: currentTimeArray
-          })
-        );
+        getSearchResult(videoInfoData.snippet.channelTitle, 50).then(recList => {
+          this.setState(
+            Object.assign(info, {
+              videoId: videoId,
+              videoInfo: videoInfoData,
+              currentTimeArray: currentTimeArray,
+              relatedVideoList: recList
+            })
+          );
+        });
       });
     });
   }
@@ -197,10 +211,12 @@ class Watch extends ReactQueryParams {
   };
   render() {
     const { windowWidth } = this.props;
+    const { videoInfo } = this.state;
+    console.log('watch.jsx');
     return (
       <div>
         {/* PC */}
-        {windowWidth > 960 && (
+        {videoInfo && windowWidth > 960 && (
           <Grid container spacing={16} direction="row-reverse">
             <Hidden mdDown>
               <Grid item xs={1} />
@@ -210,7 +226,7 @@ class Watch extends ReactQueryParams {
                 <Youtube videoId={this.state.videoId} onReady={this.onReady} stateChange={this.stateChange} />
                 <Dictionary searchWord={this.state.searchWord} subtitleLang={this.state.subtitleLang} />
                 <ShowVideo videoInfo={this.state.videoInfo} />
-                <RelatedVideo videoInfo={this.state.videoInfo} />
+                <RelatedVideo videoInfo={this.state.videoInfo} result={this.state.relatedVideoList} />
               </div>
             </Grid>
             <Grid item xs={12} md={6} lg={5}>
@@ -231,7 +247,7 @@ class Watch extends ReactQueryParams {
           </Grid>
         )}
         {/* SP */}
-        {windowWidth < 960 && (
+        {videoInfo && windowWidth < 960 && (
           <div>
             <Dictionary
               searchWord={this.state.searchWord}
@@ -264,7 +280,12 @@ class Watch extends ReactQueryParams {
                 textClear={this.textClear}
               />
             )}
-            {this.state.showInfoForSpFlg && <ShowVideo videoInfo={this.state.videoInfo} />}
+            {this.state.showInfoForSpFlg && (
+              <div>
+                <ShowVideo videoInfo={this.state.videoInfo} />
+                <List videoInfo={this.state.videoInfo} result={this.state.relatedVideoList.items} />
+              </div>
+            )}
             <FooterButtons
               getVideoData={this.getVideoData}
               subtitleList={this.state.subtitleList}

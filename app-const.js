@@ -23,6 +23,7 @@ export const category = [
     'Science',
     'Technology',
     'Ted',
+    'Music',
     // 'Movies',
     'Anime',
     // 'Foreign',

@@ -6,7 +6,6 @@ import { StyleSheet, css } from 'aphrodite';
 import moment from 'moment';
 import ellipsis from 'text-ellipsis';
 import Slider from 'react-slick';
-import shuffle from 'shuffle-array';
 import { Link } from 'react-router-dom';
 import { Card } from '@material-ui/core';
 
