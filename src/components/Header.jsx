@@ -35,12 +35,43 @@ class Header extends Component {
 
   //TODO: ホーム画面からリロードできない問題
   componentDidMount() {
+    //検索フォームでエンターキーで検索を実行
     document.getElementById('searchBox').addEventListener('keyup', event => {
       if (event.key === 'Enter') {
         this.props.history.push(`/search?q=${event.target.value}`);
       }
     });
+
+    const target = document.getElementById('header'),
+      height = 56;
+    let offset = 0,
+      lastPosition = 0,
+      ticking = false;
+
+    window.addEventListener('scroll', function(e) {
+      lastPosition = window.scrollY;
+
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          onScroll(lastPosition);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
   }
+
+  onScroll = () => {
+    if (lastPosition > height) {
+      if (lastPosition > offset) {
+        target.classList.add('head-animation');
+      } else {
+        target.classList.remove('head-animation');
+      }
+      offset = lastPosition;
+    }
+  };
+
   toggleDrawer() {
     this.setState({
       drawerOpenFlg: !this.state.drawerOpenFlg
@@ -80,7 +111,7 @@ class Header extends Component {
 
     //TODO: スマホの検索が狭いので直す
     return (
-      <div>
+      <div id="header">
         <AppBar position="static" color="primary" className={css(styles.appBar)}>
           <Toolbar>
             <Link to={`/`}>

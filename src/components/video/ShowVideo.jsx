@@ -51,7 +51,6 @@ export default class ShowVideo extends Component {
               </p>
             </div>
             <div className={css(styles.iconBox)}>
-<<<<<<< HEAD
               <IconButton onClick={this.handleRegister}>
                 {this.state.bookmarkRegistered ? (
                   <Icon className={css(styles.bookmarkIcon)} style={{ color: 'red' }}>
@@ -60,10 +59,6 @@ export default class ShowVideo extends Component {
                 ) : (
                   <Icon className={css(styles.bookmarkIcon)}>bookmark_border</Icon>
                 )}
-=======
-              <IconButton style={{ color: 'white' }} aria-label="Delete" color="inherit" label="test">
-                <Icon className={css(styles.bookmarkIcon)}>bookmark</Icon>
->>>>>>> 8d3677b6765658c76782ec3ca33309895ed7f912
               </IconButton>
               {/* <a className={css(styles.bookmarkText)}>bookmark</a> */}
               {/* <IconButton aria-label="Delete" color="inherit">
