@@ -14,6 +14,15 @@
     "@material-ui/lab": "^3.0.0-alpha.30",
     "acorn": "^6.1.1",
     "aphrodite": "^2.2.3",
+<<<<<<< HEAD
+=======
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+>>>>>>> 8d3677b6765658c76782ec3ca33309895ed7f912
     "browser-sync": "^2.24.7",
     "core-js": "^3.0.0",
     "country-list": "^2.1.0",

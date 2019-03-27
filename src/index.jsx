@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, Switch } from 'react-router-dom';
+import "babel-polyfill";
 import { createBrowserHistory } from 'history';
 import ReactGA from 'react-ga';
 import ReactQueryParams from 'react-query-params';
