@@ -22,13 +22,30 @@ module.exports = {
   devtool: 'inline-source-map',
   module: {
     rules: [{
-        test: /\.jsx$/,
+        test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
-          }
+        loader: 'babel-loader',
+        query: {
+          babelrc: false,
+          presets: [
+            ['@babel/preset-env', {
+              useBuiltIns: 'usage',
+              corejs: 3,
+              targets: {
+                "browsers": [
+                  "> 0.25%",
+                  "Chrome >= 41", // ここでGooglebot対応
+                  "ie >= 11" // polyfillでレガシー対応するのであれば、ここまで振り切っても良い気がする
+                ]
+              },
+            }],
+            '@babel/preset-react',
+          ],
+          plugins: [
+            ['@babel/plugin-proposal-class-properties', {
+              loose: true
+            }]
+          ]
         }
       },
       {

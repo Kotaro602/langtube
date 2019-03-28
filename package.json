@@ -75,20 +75,6 @@
     "type": "git",
     "url": "https://github.com/bradtraversy/youtube_api_auth_app.git"
   },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "useBuiltIns": "entry"
-        }
-      ],
-      "@babel/preset-react"
-    ],
-    "plugins": [
-      "@babel/plugin-proposal-class-properties"
-    ]
-  },
   "author": "",
   "license": "ISC",
   "bugs": {

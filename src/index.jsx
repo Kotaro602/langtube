@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, Switch } from 'react-router-dom';
-import "babel-polyfill";
 import { createBrowserHistory } from 'history';
 import ReactGA from 'react-ga';
 import ReactQueryParams from 'react-query-params';
@@ -13,7 +12,6 @@ import History from './containers/History';
 import Bookmark from './containers/Bookmark';
 import Header from './components/Header';
 import { readHistory, readBookmark } from './api/FirebaseAPI';
-import '@babel/polyfill'; //TODO: pollyfillを直す
 
 ReactGA.initialize(gaTrackingCode);
 const history = createBrowserHistory();
@@ -64,7 +62,6 @@ class App extends ReactQueryParams {
   render() {
     console.log('index.jsx');
     return (
-      //      <UserInfoContext.Provider value={{ userInfo: this.state.userInfo, chgUserInfo: this.chgUserInfo }}>
       <Router history={history}>
         {this.state.loading ? (
           <div>loading...</div>
@@ -82,59 +79,7 @@ class App extends ReactQueryParams {
           </div>
         )}
       </Router>
-      //      </UserInfoContext.Provider>
     );
   }
 }
 ReactDOM.render(<App />, document.querySelector('#content'));
-
-// downloadGoogleScript = callback => {
-//   const element = document.getElementsByTagName('script')[0];
-//   const js = document.createElement('script');
-//   js.id = 'google-platform';
-//   js.src = '//apis.google.com/js/platform.js';
-//   js.async = true;
-//   js.defer = true;
-//   element.parentNode.insertBefore(js, element);
-//   js.onload = () => callback(window.gapi);
-// };
-// initSignInButton = gapi => {
-//   gapi.load('auth2', () => {
-//     gapi.auth2.init({ client_id: youtube.clientId }).then(
-//       result => {
-//         if (result.isSignedIn.get()) {
-//           this.setState({ authenticated: true, gapi });
-//         } else {
-//           this.setState({ authenticated: false, gapi });
-//         }
-//       },
-//       err => console.error(err)
-//     );
-//   });
-// };
-// onSignIn = googleUser => {
-//   console.log('UserID: ' + googleUser.getBasicProfile().getId());
-//   this.setState({ authenticated: true });
-// };
-// onSignOut = () => {
-//   const auth2 = this.state.gapi.auth2.getAuthInstance();
-//   auth2.signOut().then(() => console.log('sign out'));
-//   this.setState({ authenticated: false });
-// };
-// modalClickOpen = () => {
-//   console.log('openmodal');
-//   this.setState({ modalOpen: true });
-// };
-// modalClose = value => {
-//   this.setState({ modalOpen: false });
-// };
-
-{
-  /* <LoginModal
-            open={this.state.modalOpen}
-            modalOpen={this.state.modalOpen}
-            modalClose={this.modalClose}
-            gapi={this.state.gapi}
-            onSignIn={this.onSignIn}
-          /> */
-}
